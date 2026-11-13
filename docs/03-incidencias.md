@@ -1,9 +1,9 @@
 # Bastión — Registro de incidencias
 
 > Formato: síntoma → diagnóstico → causa → solución → aprendizaje.
-> Las incidencias 1–12 son de las fases 1, 1b y 2 (Hyper-V); el detalle completo está en la memoria Word de esas fases. De la 13 en adelante, fase 3 (Proxmox).
-> **25 incidencias registradas. La siguiente nueva será la 26.**
-> Última actualización: 09/11/2026.
+> Las incidencias 1–12 son de las fases 1, 1b y 2 (Hyper-V); el detalle completo está en la memoria Word de esas fases. De la 13 en adelante, fase 3 y fase A (Proxmox).
+> **27 incidencias registradas. La siguiente nueva será la 28.**
+> Última actualización: 13/11/2026.
 
 ---
 
@@ -36,6 +36,8 @@
 | 23 | 04–07/11/2026 | Proxmox / DNS | Pi-hole y Kuma parados 3 días sin aviso | Sin arranque automático y pve01 dependía de Pi-hole |
 | 24 | 08/11/2026 | Copias | La copia diaria solo guardaba kuma01 | Tarea creada con selección manual de una sola máquina |
 | 25 | 09/11/2026 | n8n | El chat público del agente rechaza la conexión | Redirección de la autenticación n8n User Auth |
+| 26 | 13/11/2026 | Google Cloud / rclone | Bloqueo `403: access_denied` al autorizar rclone | App OAuth en modo prueba sin usuarios autorizados ni URLs de marca |
+| 27 | 13/11/2026 | Copias / ntfy | El script sube a Drive pero no llega el aviso a ntfy | Barras invertidas en `grep` con `pipefail` y marcador del tema sin sustituir |
 
 ---
 
@@ -94,7 +96,7 @@
 
 ---
 
-## Fase 3 (Proxmox)
+## Fase 3 y Fase A (Proxmox)
 
 ### Incidencia 13 — El router no responde al DNS de pve01
 - **Síntoma:** `Could not resolve host: tailscale.com`.
@@ -167,7 +169,7 @@
 - **Síntoma:** la notificación de la copia de las 03:30 del 08/11 solo lista el VMID 100 (kuma01, 604 MB).
 - **Diagnóstico:** se leyó el detalle de la notificación en lugar de quedarse con "backup successful". `ls -lh /var/lib/vz/dump` confirmó copias diarias solo de kuma01 desde el 01/11. La línea de la orden mostraba `vzdump 100 ...`.
 - **Causa:** la tarea se creó cuando solo existía kuma01, con selección manual. pihole01 (CT 101) y docker01 (VM 103, con Paperless y n8n) nunca se añadieron, así que **no tenían copias automáticas**. La prueba de restauración de docker01 se hizo con una copia manual, lo que ocultó el fallo.
-- **Solución:** añadir 101 y 103 a la tarea y lanzarla con *Run now*: salen 100, 101 y 103 en estado `ok` (copia completa ≈ 6 GB: 0,6 + 0,3 + 5,1 GB, 2 min). Espacio comprobado con `df -h /` (`root` de 64 GB al 20 %). Con 7 diarias + 2 semanales no cabía, así que la retención se bajó **temporalmente a 3 diarias + 1 semanal**, hasta llevar las copias al HDD. Pendiente: cambiar a **Modo de selección: Todo** (la orden todavía muestra `--all 0`).
+- **Solución:** añadir 101 y 103 a la tarea y lanzarla con *Run now*: salen 100, 101 y 103 en estado `ok` (copia completa ≈ 6 GB: 0,6 + 0,3 + 5,1 GB, 2 min). Espacio comprobado con `df -h /` (`root` de 64 GB al 20 %). Con 7 diarias + 2 semanales no cabía, así que la retención se bajó **temporalmente a 3 diarias + 1 semanal**, hasta llevar las copias al HDD. En la Fase A se cambió a **Modo de selección: Todo** (`all 1` en `/etc/pve/jobs.cfg`).
 - **Aprendizaje:** "backup successful" significa que lo seleccionado se copió bien, no que se copió todo (regla 1: leer la salida literal). Usar el modo **Todo** para que entren también las máquinas futuras, revisar qué máquinas aparecen en la notificación cada vez que se crea una nueva, y calcular el espacio antes de ampliar lo que se copia. El informe semanal de n8n con Gemini detectó el problema solo al revisar las tareas `vzdump` de la semana.
 
 ### Incidencia 25 — El chat público del agente rechaza la conexión
@@ -177,9 +179,23 @@
 - **Solución:** cambiar la autenticación del Chat Trigger a **Basic Auth**, con una credencial propia independiente de la cuenta de n8n, y volver a publicar. El chat funciona desde el PC y desde el Pixel con Tailscale.
 - **Aprendizaje:** "conexión rechazada" con el DNS y el proxy verificados apunta a una **redirección**, no a la red: hay que mirar la URL final, no la que escribiste. Con varios nombres para el mismo servicio (IP:puerto y nombre), las cookies de sesión no se comparten entre ellos.
 
+### Incidencia 26 — Bloqueo `403: access_denied` al autorizar rclone con Google Drive
+- **Síntoma:** al abrir el enlace de `rclone authorize "drive"` en el navegador del PC usando el *Client ID* propio, Google bloquea el inicio de sesión con `Error 403: access_denied` indicando que *"RCLONE no ha completado el proceso de verificación de Google"*. Al ir a Google Auth Platform para publicar la app, el botón **Publicar app** aparece deshabilitado.
+- **Diagnóstico:** lectura literal de los dos mensajes en pantalla (regla 1): el error 403 indica que *"la app se está probando y solo pueden acceder a ella los testers aprobados"*, y el recuadro emergente del botón deshabilitado indica que faltan las URL de página principal y política de privacidad en la sección de marca.
+- **Causa:** un proyecto OAuth externo nuevo en Google Auth Platform nace en estado **Prueba** con la lista de usuarios de prueba vacía (bloqueando incluso al propio creador del proyecto) y no permite pasar a estado **Producción** hasta rellenar los campos obligatorios de marca y dominio autorizado. Además, al cerrarse el proceso `rclone authorize` tras el primer fallo, recargar la pestaña devolvió `ERR_CONNECTION_REFUSED` en `127.0.0.1`.
+- **Solución:** rellenar en **Información de la marca** las URL requeridas (apuntando al perfil de GitHub) y el dominio autorizado (`github.com`), pasar la aplicación a **Producción** en **Público** (lo que evita además que el token caduque a los 7 días) y relanzar `rclone authorize` en la PowerShell del PC para que vuelva a escuchar en `127.0.0.1`.
+- **Aprendizaje:** ser el propietario del proyecto en Google Cloud no te incluye automáticamente como usuario autorizado en una pantalla OAuth en modo de prueba; y para tareas desatendidas por `systemd`, publicar la app en producción evita que el token de refresco caduque cada semana.
+
+### Incidencia 27 — El script `backup-to-drive.sh` sube las copias pero no envía la notificación a ntfy
+- **Síntoma:** la primera ejecución manual de `/usr/local/bin/backup-to-drive.sh` sube los 10 archivos (18,21 GiB) a Google Drive y devuelve el prompt, pero no llega ninguna notificación al móvil.
+- **Diagnóstico:** revisión del registro `/var/log/rclone-backup.log` (regla 4) y del código del script `/usr/local/bin/backup-to-drive.sh` (regla 3).
+- **Causa:** dos problemas combinados en el bloque de notificación: (1) la expresión `grep -o '\"count\":[0-9]*'` buscaba literalmente barras invertidas en la salida JSON de `rclone size`, fallando al estar activo `set -euo pipefail`, y (2) la variable `NTFY_URL` todavía conservaba el marcador de posición en vez del tema real.
+- **Solución:** sustituir el patrón por `grep -o '"count":[0-9]*'`, poner el tema real en `NTFY_URL` y volver a ejecutar `/usr/local/bin/backup-to-drive.sh`. La comprobación tardó segundos y entregó la notificación con `"count":10`.
+- **Aprendizaje:** con `set -euo pipefail`, cualquier comando dentro de una sustitución `$(...)` que devuelva código distinto de cero detiene el script antes de llegar a la línea siguiente; siempre hay que probar la notificación de extremo a extremo.
+
 ---
 
-## Otros aprendizajes de la fase 3
+## Otros aprendizajes de la fase 3 y fase A
 
 - Una alerta o una copia que nunca se ha probado con un fallo real no está probada.
 - El vigilante no puede vivir dentro de lo que vigila (Uptime Kuma frente a Healthchecks).
@@ -193,3 +209,4 @@
 - La IA resume, pero no sustituye la fuente: el informe semanal acertó el problema de las copias y aun así se equivocó en un día. Los datos exactos se comprueban en Proxmox.
 - En n8n, un nodo HTTP con método **GET** hacia ntfy responde con éxito pero no publica nada: verde no significa enviado.
 - Para dar herramientas a un AI Agent de n8n hay que usar la variante **Tool** del nodo (se conecta debajo del agente), no el nodo normal de la cadena.
+- En archivos YAML (como `services.yaml` de Homepage), comentar solo la primera línea de un bloque deja las claves hijas huérfanas y rompe la sintaxis: hay que comentar todas las líneas del bloque.

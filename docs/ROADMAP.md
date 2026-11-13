@@ -1,7 +1,7 @@
 # Bastión — ROADMAP y seguimiento
 
 > Tablero de progreso. Cada casilla marcada es un hito verificable (un *commit*, una incidencia cerrada, un servicio en marcha).
-> Actualizado: 10/11/2026.
+> Actualizado: 13/11/2026.
 
 ## Leyenda
 `[x]` hecho · `[~]` en curso · `[ ]` pendiente
@@ -13,25 +13,25 @@
 - [x] Servidor OptiPlex 7020 validado (Memtest86+, SMART) y Proxmox VE 9.2 en UEFI
 - [x] Tailscale como router de subred, sin puertos abiertos en casa
 - [x] Pi-hole (DNS + nombres `*.home.arpa`) para la tailnet
-- [x] Uptime Kuma (10 monitores) + ntfy + Healthchecks.io externo
+- [x] Uptime Kuma (9 monitores activos) + ntfy + Healthchecks.io externo
 - [x] Glances en el anfitrión para el hardware
 - [x] Copias diarias de las 3 máquinas, restauración probada
 - [x] docker01 endurecida con Docker Compose
-- [x] Nginx Proxy Manager, Homepage, Paperless, GLPI (apagado)
+- [x] Nginx Proxy Manager, Homepage, Paperless (apagado), GLPI (apagado)
 - [x] n8n: informe semanal con Gemini + agente de operaciones por chat
-- [x] Inventario, 25 incidencias y memorias documentadas
+- [x] Inventario, 27 incidencias y memorias documentadas
 
 ---
 
 ## Fase A — Cerrar la infraestructura (esta semana)
 
-- [~] A1 · Copia cifrada a Drive con rclone (3-2-1) — runbook listo, falta ejecutar
-- [ ] A2 · Tarea de copias en "Modo de selección: Todo"
-- [ ] A3 · docker01 a 4 GB de RAM
-- [ ] A4 · Paperless: integrar con Drive o apagar
-- [ ] A5 · SSH de pve01 solo con clave (en casa)
-- [ ] A6 · Quitar `mail-to-root` y cambiar el tema de ntfy
-- [ ] A7 · Subir Bastión a GitHub con la estructura nueva
+- [x] A1 · Copia cifrada a Drive con rclone (3-2-1)
+- [x] A2 · Tarea de copias en "Modo de selección: Todo" (`all 1`)
+- [x] A3 · docker01 a 4 GB de RAM
+- [x] A4 · Paperless: apagado a propósito y retirado de Homepage/Kuma
+- [ ] ~~A5 · SSH de pve01 solo con clave~~ — descartado por decisión (13/11/2026)
+- [x] A6 · Quitar `mail-to-root` (tema de ntfy actual mantenido por decisión)
+- [x] A7 · Bastión en GitHub (repositorio `bastion`, 13/11/2026)
 
 ## Fase B — Hardware (visita a Yepes)
 
@@ -48,11 +48,18 @@
 
 ## Fase D — Nube 1: web pública (Google Cloud)
 
-- [ ] D1 · Presupuesto y alerta en Google Cloud; apuntar fecha de caducidad
-- [ ] D2 · Sitio Astro (portafolio + blog + incidencias) en GitHub Pages
+- [~] D1 · Presupuesto y alerta en Google Cloud (proyecto creado; facturación pendiente de la verificación de Google); apuntar fecha de caducidad
+- [x] D2 · Sitio Astro en GitHub Pages con `martindeprada.dev` (portafolio hecho; blog e incidencias pendientes)
 - [ ] D3 · VM en Google Cloud (Madrid), en la tailnet
-- [ ] D4 · Dominio del Student Pack + HTTPS por DNS
+- [~] D4 · Dominio propio + HTTPS: hecho para GitHub Pages; pendiente para la VM de la nube
 - [ ] D5 · WAF (OWASP) + CrowdSec en la web
+
+## Fase I — Publicar servicios: ¿abrir puertos o salir a la red? (después de la web)
+
+- [ ] I1 · Comparar tres opciones: seguir cerrado y publicar desde la nube, túnel saliente, o abrir puertos en una zona aislada
+- [ ] I2 · Escribir la decisión con su riesgo, su coste y su plan de vuelta atrás
+- [ ] I3 · Prueba de concepto con un servicio de usar y tirar
+- [ ] I4 · Adaptar la web al resultado: alojamiento, despliegue y cifras
 
 ## Fase E — SOC (tras la fase B)
 
@@ -85,6 +92,6 @@
 ## Decisiones abiertas (tuyas)
 
 - [ ] Nombre y dominio definitivos (propuesta: Bastión)
-- [ ] Renombrar el repositorio `Homelab-ASIR-Practica`
+- [x] Renombrar el repositorio `Homelab-ASIR-Practica` → `bastion` (13/11/2026)
 - [ ] Datos de contacto que aparecen en la web pública
-- [ ] Futuro de Paperless
+- [x] Futuro de Paperless (apagado a propósito el 13/11/2026)

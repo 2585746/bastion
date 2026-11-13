@@ -125,7 +125,7 @@ Elimina el proyecto y todo su contenido. Se puede recuperar durante 30 días; de
 
 **3. No actualices la cuenta de facturación a pago** si no vas a seguir usando Google Cloud. Si la prueba termina sin actualizar, Google detiene los recursos y no cobra.
 
-**4. Lo que no se borra con el proyecto:** la API de Gemini de AI Studio vive en su propio proyecto ("Proyecto de Gemini"). n8n depende de ella: **no la toques**. Revisa que su límite de gasto mensual sigue en 3 €.
+**4. Lo que no se borra con el proyecto:** la API de Gemini de AI Studio y el cliente OAuth de `rclone` viven en su propio proyecto ("Proyecto de Gemini"). n8n y `rclone` dependen de él: **no lo toques**. Revisa que su límite de gasto mensual sigue en 3 €.
 
 **5. Comprueba la facturación una semana después:** Facturación → Informes. Debe estar a cero.
 
@@ -146,6 +146,6 @@ Elimina el proyecto y todo su contenido. Se puede recuperar durante 30 días; de
 - [ ] Honeypot enviando registros a Wazuh desde Oracle
 - [ ] `gcloud projects list` no muestra `bastion-cloud`
 - [ ] Facturación de Google Cloud a cero una semana después
-- [ ] La API de Gemini y n8n siguen funcionando (informe semanal del lunes)
+- [ ] La API de Gemini, n8n y `rclone` siguen funcionando
 - [ ] Máquinas antiguas fuera de Tailscale, Wazuh, Kuma y Ansible
 - [ ] Inventario, ROADMAP y un artículo en el blog: "Migré mi infraestructura entre tres nubes"

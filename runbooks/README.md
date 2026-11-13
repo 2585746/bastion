@@ -6,8 +6,8 @@ Guías paso a paso, una por fase del [plan maestro](../docs/plan-maestro.md). Ca
 
 | # | Runbook | Fase | Necesita antes | Dónde se hace | Tiempo |
 |---|---|---|---|---|---|
-| 01 | [Copia cifrada a Google Drive](01-copia-externa-rclone.md) | A1 | — | Remoto (Tailscale) | 45 min |
-| 02 | [Cerrar la infraestructura](02-cierre-infraestructura.md) | A2–A7 | 01 | Remoto, salvo el SSH de pve01 (en casa) | 2 h |
+| 01 | [Copia cifrada a Google Drive](01-copia-externa-rclone.md) | A1 ✅ | — | Remoto (Tailscale) | 45 min |
+| 02 | [Cerrar la infraestructura](02-cierre-infraestructura.md) | A2–A7 🔄 | 01 | Remoto, salvo el SSH de pve01 (en casa) | 2 h |
 | 03 | [Sesión de hardware](03-hardware.md) | B | 01 (copia fresca) | En casa, con el servidor delante | Una tarde |
 | 04 | [Linux y Ansible](04-linux-y-ansible.md) | C | — | Remoto | Continuo |
 | 05 | [Web pública en Google Cloud](05-web-publica-google-cloud.md) | D | Sitio web y dominio | Remoto | 3 h |
@@ -31,7 +31,7 @@ prompt del portafolio ─► 05
 2. **Un comando, una comprobación.** No sigas si la salida no es la esperada (regla 1: leer la salida literal).
 3. **Instantánea antes de cambios grandes** en una VM: `qm snapshot <id> antes-de-<cambio>`.
 4. **Al terminar:** casillas de verificación, inventario, ROADMAP y *commit* en GitHub.
-5. **Si algo falla:** documenta la incidencia con el formato de siempre (síntoma → diagnóstico → causa → solución → aprendizaje). La siguiente es la **26**.
+5. **Si algo falla:** documenta la incidencia con el formato de siempre (síntoma → diagnóstico → causa → solución → aprendizaje). La siguiente es la **28**.
 
 ## Avisos generales
 

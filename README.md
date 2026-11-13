@@ -14,7 +14,7 @@ Proyecto personal de Martín De Prada. Un servidor físico en casa con Proxmox V
 - **Red:** acceso remoto por Tailscale (router de subred), DNS propio con Pi-hole, proxy inverso con Nginx Proxy Manager. **Cero puertos abiertos en el router.**
 - **Observabilidad:** Uptime Kuma, Glances y Healthchecks.io, con alertas al móvil por ntfy.
 - **Automatización + IA:** n8n con la API de Gemini genera un informe semanal del estado y expone un agente de operaciones por chat (solo lectura) consultable desde el móvil.
-- **Documentación:** inventario como fuente de verdad, 25 incidencias con su diagnóstico y memorias por fase.
+- **Documentación:** inventario como fuente de verdad, 27 incidencias con su diagnóstico y memorias por fase.
 
 ## Hacia dónde va
 

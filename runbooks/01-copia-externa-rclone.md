@@ -1,4 +1,4 @@
-# Runbook 01 — Copia de seguridad cifrada a Google Drive con rclone
+# Runbook 01 — Copia de seguridad cifrada a Google Drive con rclone (✅ Completado)
 
 > **Objetivo:** subir las copias de Proxmox a Google Drive, **cifradas en el servidor**, para completar la regla 3-2-1. Google solo verá archivos ilegibles; solo tú, con la contraseña de cifrado, puedes recuperarlos.
 > **Dónde se ejecuta:** en **pve01** (la sesión SSH como root, o la consola web).
@@ -50,13 +50,14 @@ Debe mostrar una versión (1.6x o superior). Si dijera "command not found", algo
 
 ## Paso 2 — Crear tu propio "client ID" en Google (recomendado)
 
-rclone trae un identificador compartido por miles de personas y va lento por los límites de Google. Crear el tuyo (gratis) hace la subida más rápida y fiable. Si prefieres saltártelo hoy, ve al Paso 3 y pulsa "No" cuando pregunte por el client ID; se puede añadir después.
+rclone trae un identificador compartido por miles de personas y va lento por los límites de Google. Crear el tuyo (gratis) hace la subida más rápida y fiable.
 
 1. Entra en `https://console.cloud.google.com` con tu cuenta.
 2. **APIs y servicios → Biblioteca →** busca **Google Drive API → Habilitar**.
-3. **APIs y servicios → Pantalla de consentimiento de OAuth:** tipo **Externo**, nombre de la app "rclone", tu correo. Guarda. En "Usuarios de prueba", añade tu propio correo.
-4. **APIs y servicios → Credenciales → Crear credenciales → ID de cliente de OAuth → Aplicación de escritorio.** Nombre "rclone".
-5. Copia el **ID de cliente** y el **secreto de cliente**. Guárdalos en el gestor; los pega rclone en el paso siguiente.
+3. **Google Auth Platform → Información de la marca:** nombre de la app "rclone", tu correo, URLs de página principal y política de privacidad (`https://github.com/2585746`) y dominio autorizado (`github.com`). Guarda.
+4. **Google Auth Platform → Público:** pulsa **Publicar app** para pasarla a producción (así el token no caduca a los 7 días).
+5. **Google Auth Platform → Clientes → Crear cliente de OAuth → Aplicación de escritorio.** Nombre "rclone".
+6. Copia el **ID de cliente** y el **secreto de cliente**. Guárdalos en el gestor; los pega rclone en el paso siguiente.
 
 ---
 
@@ -102,8 +103,8 @@ Seguimos dentro de `rclone config`:
 | name | `gcrypt` |
 | Storage | busca **crypt** y pon su número |
 | remote | `gdrive:bastion-backups` (el remoto de antes + la carpeta) |
-| filename_encryption | **2** (standard: cifra también los nombres) |
-| directory_name_encryption | **1** (true) |
+| filename_encryption | **1** / **standard** (cifra también los nombres) |
+| directory_name_encryption | **1** / **true** |
 | Password | elige **y** (escribir la tuya) y pega la **contraseña de cifrado de archivos** del paso 0 |
 | Salt (password2) | **y** y pega la **contraseña de nombres** |
 | Edit advanced config | **n** |
@@ -146,7 +147,7 @@ Aquí el nombre sale como una cadena ilegible. **Eso es exactamente lo que quere
 Borra la prueba:
 
 ```
-rclone delete gcrypt:prueba.txt
+rclone delete gcrypt:prueba.txt && rm /tmp/prueba.txt
 ```
 
 ---
@@ -174,7 +175,7 @@ if rclone sync "$ORIGEN" "$DESTINO" \
      --include "*.zst" --include "*.vma.zst" \
      --transfers 2 --bwlimit 8M \
      --log-file /var/log/rclone-backup.log --log-level INFO; then
-  MENSAJE="Copia a Drive OK: $(rclone size gcrypt: --json | grep -o '\"count\":[0-9]*')"
+  MENSAJE="Copia a Drive OK: $(rclone size gcrypt: --json | grep -o '"count":[0-9]*')"
   curl -s -H "Title: Bastion - copia a Drive" -d "$MENSAJE" "$NTFY_URL" >/dev/null
 else
   curl -s -H "Title: Bastion - FALLO copia a Drive" -H "Priority: high" \
@@ -196,13 +197,13 @@ Guarda (**Ctrl+O**, Enter) y sal (**Ctrl+X**). Hazlo ejecutable:
 chmod +x /usr/local/bin/backup-to-drive.sh
 ```
 
-Pruébalo a mano una vez (tardará según lo que ocupen las copias y tu subida):
+Pruébalo a mano una vez:
 
 ```
 /usr/local/bin/backup-to-drive.sh
 ```
 
-Debe llegarte la notificación "Bastion - copia a Drive" al móvil. Pásame esa captura.
+Debe llegarte la notificación "Bastion - copia a Drive" al móvil.
 
 ---
 
@@ -254,7 +255,7 @@ Comprueba que quedó programado:
 systemctl list-timers backup-to-drive.timer
 ```
 
-Debe aparecer con la próxima ejecución a las 04:00. 
+Debe aparecer con la próxima ejecución a las 04:00.
 
 ---
 
@@ -263,16 +264,16 @@ Debe aparecer con la próxima ejecución a las 04:00.
 Una copia que no se ha restaurado no está probada (regla de la fase 3). Simula que recuperas una copia desde cero:
 
 ```
-mkdir -p /tmp/restore-test && rclone copy gcrypt: /tmp/restore-test --include "*kuma*" -P
+mkdir -p /tmp/restore-test && rclone copy gcrypt: /tmp/restore-test --include "*100*" -P
 ```
 
-Descarga y **descifra** la copia más reciente de kuma01 a una carpeta temporal. Comprueba que el archivo está y pesa lo esperado:
+Descarga y **descifra** las copias de kuma01 (CT 100) a una carpeta temporal. Comprueba que el archivo está y pesa lo esperado:
 
 ```
 ls -lh /tmp/restore-test
 ```
 
-Si el `.zst` aparece con su tamaño normal (varios cientos de MB), el ciclo completo funciona: cifra, sube, descarga y descifra. Limpia:
+Si el `.zst` aparece con su tamaño normal (~605 MB), el ciclo completo funciona: cifra, sube, descarga y descifra. Limpia:
 
 ```
 rm -rf /tmp/restore-test
@@ -282,22 +283,9 @@ rm -rf /tmp/restore-test
 
 ## Verificación final (todo en verde)
 
-- [ ] `rclone ls gcrypt:` lista las copias con nombre legible.
-- [ ] `rclone ls gdrive:bastion-backups` las muestra con nombre cifrado.
-- [ ] Llega la notificación de ntfy al ejecutar el script.
-- [ ] `systemctl list-timers` muestra la subida a las 04:00.
-- [ ] La prueba de restauración descarga y descifra bien.
-- [ ] Las dos contraseñas de cifrado están en el gestor de contraseñas.
-
----
-
-## Para los documentos
-
-**`01-inventario.md`**, sección 5, fila "Copia fuera de casa": cambia el 🔜 por
-`✅ rclone con crypt (gdrive→gcrypt) hacia Drive/bastion-backups; cifrado en pve01; temporizador systemd backup-to-drive.timer a las 04:00; aviso por ntfy; restauración probada`.
-
-**`01-inventario.md`**, sección 8, añade:
-`| Contraseñas de cifrado de rclone (archivos y nombres) | Gestor de contraseñas (imprescindibles para restaurar desde Drive) |`
-`| Token de Google Drive de rclone | /root/.config/rclone/rclone.conf en pve01 (permisos 600) |`
-
-**Incidencias:** si surge algún fallo durante el montaje, será la **incidencia 26**.
+- [x] `rclone ls gcrypt:` lista las copias con nombre legible.
+- [x] `rclone ls gdrive:bastion-backups` las muestra con nombre cifrado.
+- [x] Llega la notificación de ntfy al ejecutar el script.
+- [x] `systemctl list-timers` muestra la subida a las 04:00.
+- [x] La prueba de restauración descarga y descifra bien.
+- [x] Las dos contraseñas de cifrado están en el gestor de contraseñas.
