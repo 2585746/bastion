@@ -1,0 +1,41 @@
+# .gitignore de Bastión — nunca subir secretos
+
+# Variables de entorno y secretos
+.env
+*.env
+docker-compose.env
+*.secret
+
+# Claves y certificados
+*.key
+*.pem
+*.crt
+*.pub
+id_*
+*_rsa
+*_ed25519
+
+# Configuración de rclone (contiene el token de Drive)
+rclone.conf
+
+# Credenciales de nube
+*.tfvars
+*-credentials.json
+service-account*.json
+.terraform/
+*.tfstate
+*.tfstate.*
+
+# Vault de Ansible sin cifrar
+vault-pass.txt
+*.vault
+
+# Copias y volcados
+*.zst
+*.vma
+dump/
+backups/
+
+# Sistema
+.DS_Store
+*.log
