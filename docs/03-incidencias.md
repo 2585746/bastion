@@ -2,8 +2,9 @@
 
 > Formato: síntoma → diagnóstico → causa → solución → aprendizaje.
 > Las incidencias 1–12 son de las fases 1, 1b y 2 (Hyper-V); el detalle completo está en la memoria Word de esas fases. De la 13 en adelante, fase 3 y fase A (Proxmox).
-> **27 incidencias registradas. La siguiente nueva será la 28.**
-> Última actualización: 13/11/2026.
+> **28 incidencias registradas (la 1 a la 27 y la 29). La 28 está reservada para el caso de verificación de Google Cloud; la siguiente nueva será la 30.**
+> Última actualización: 14/11/2026.
+> Fuente real: GLPI. Este archivo es la copia versionada.
 
 ---
 

@@ -1,7 +1,7 @@
 # Bastión — ROADMAP y seguimiento
 
 > Tablero de progreso. Cada casilla marcada es un hito verificable (un *commit*, una incidencia cerrada, un servicio en marcha).
-> Actualizado: 13/11/2026.
+> Actualizado: 14/11/2026.
 
 ## Leyenda
 `[x]` hecho · `[~]` en curso · `[ ]` pendiente
@@ -17,9 +17,10 @@
 - [x] Glances en el anfitrión para el hardware
 - [x] Copias diarias de las 3 máquinas, restauración probada
 - [x] docker01 endurecida con Docker Compose
-- [x] Nginx Proxy Manager, Homepage, Paperless (apagado), GLPI (apagado)
+- [x] Nginx Proxy Manager, Homepage, GLPI, Paperless (apagado)
 - [x] n8n: informe semanal con Gemini + agente de operaciones por chat
-- [x] Inventario, 27 incidencias y memorias documentadas
+- [x] Inventario, incidencias y memorias documentadas
+- [x] GLPI reactivado y 27 incidencias importadas por API, más la 29 (14/11/2026)
 
 ---
 
@@ -42,7 +43,7 @@
 
 ## Fase C — Linux + Ansible
 
-- [ ] C1 · Clases de Linux en lab01 (12 clases)
+- [~] C1 · Linux en lab01: contenedor creado (14/11/2026); estudio con un curso
 - [ ] C2 · Ansible: inventario, playbook de actualizaciones, bootstrap
 - [ ] C3 · Playbooks en GitHub
 

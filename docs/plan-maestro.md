@@ -1,7 +1,7 @@
 # Bastión — Plan maestro
 
 > Hoja de ruta por fases del proyecto **Bastión**. Define qué se monta, cuándo, cuánto ocupa de recursos y crédito, cómo se hace migrable y cómo encaja con la nube y la web.
-> Fecha: 13/11/2026. Se actualiza al cerrar cada fase.
+> Fecha: 14/11/2026. Se actualiza al cerrar cada fase.
 > Principio rector: **infraestructura como código + Docker + todo en GitHub**, para que nada quede atado a un proveedor.
 
 ---
@@ -14,13 +14,15 @@
 
 ---
 
-## Estado al 13/11/2026
+## Estado al 14/11/2026
 
 | Fase | Estado |
 |---|---|
 | **A** | A1 (copia cifrada con rclone), A2 (copias en modo «Todo»), A3 (docker01 a 4 GB), A4 (Paperless apagado) y A6 (`mail-to-root` quitado) **hechos**. A5 (SSH solo con clave) **descartado por decisión**. Cambio del tema de ntfy **descartado por decisión**. A7 (Bastión en GitHub) **hecho**: la fase A queda **cerrada** |
-| **D** | D1: proyecto `bastion-cloud-2006` creado, con presupuesto de 90 €/mes y alertas al 50, 90 y 100 %; la vinculación de facturación espera la verificación de Google. D2: sitio Astro publicado en GitHub Pages con el dominio `martindeprada.dev` y HTTPS (fases 1, 2 y 2b de la web hechas). D3 y D5 pendientes |
-| **I** | Nueva. Sin empezar |
+| **C** | C1: el contenedor de prácticas `lab01` está creado y arrancado (con *nesting* activado); el estudio de Linux se hace con un curso. C2 y C3 (Ansible) pendientes |
+| **D** | D1: proyecto de Google Cloud creado, con presupuesto de 90 €/mes y alertas al 50, 90 y 100 %; la vinculación de facturación espera la verificación de Google. D2: sitio Astro publicado en GitHub Pages con el dominio `martindeprada.dev` y HTTPS (fases 1, 2 y 2b de la web hechas). D3 y D5 pendientes |
+| **I** | Nueva. Sin empezar. Es lo siguiente: desbloquea cómo se publican Estado e Incidencias en la web |
+| **Servicios** | **GLPI** reactivado el 14/11 como fuente de las incidencias: 27 incidencias importadas por API más la 29 (la 28 está reservada). **Paperless** apagado de verdad (seguía encendido hasta el 13/11) |
 
 ---
 
@@ -76,6 +78,8 @@ Sin esta fase no hay memoria para Wazuh (5–7 GB), así que **la fase E depende
 ## 4. Fase C — Automatización: Linux + Ansible
 
 La base que hace que todo lo demás sea profesional y migrable.
+
+**Estado (14/11/2026):** `lab01` creado (CT 102, Debian 13, sin privilegios, *nesting* activado) y arrancado. El estudio de Linux se hace con un curso; `lab01` es el campo de pruebas. Ansible, pendiente.
 
 1. **Clases de Linux** en `lab01` (las 12 del plan de contexto), escribiendo los comandos a mano.
 2. **Ansible** en `ansible01`:
@@ -206,6 +210,10 @@ Reconstruir desde cero (decisión ya tomada) el controlador de dominio `lab.inte
 
 Se decidió **apagarlo** (`docker compose stop`) igual que GLPI, conservando sus volúmenes y configuración, pausando su monitor en Uptime Kuma y comentando su bloque en `services.yaml` de Homepage para ahorrar memoria RAM de cara al SOC.
 
+**Corrección (14/11/2026):** al revisar `docker01` se comprobó que Paperless seguía encendido (tres contenedores, unos 770 MB). Se apagó entonces de verdad y la memoria disponible pasó de 2,1 GB a 2,7 GB.
+
+**GLPI vuelve a estar encendido** desde el 14/11/2026, porque pasa a ser la fuente real del registro de incidencias. Cabe en memoria con Paperless apagado. Se tomó una instantánea de la VM antes de reactivarlo y otra antes de importar las incidencias.
+
 ---
 
 ## 10. Estructura del repositorio en GitHub
@@ -235,3 +243,32 @@ Regla de oro del repositorio: **nunca se sube un `.env`, una clave ni un token.*
 ## 11. Seguimiento de progreso
 
 El estado de cada fase se lleva en `docs/ROADMAP.md` con casillas, y cada hito cerrado se refleja aquí y en el inventario. Así el propio GitHub es la prueba del avance: *commits* fechados, incidencias resueltas y documentos que crecen.
+
+---
+
+## 12. GLPI como fuente de las incidencias
+
+**Decisión:** GLPI es la fuente real del registro de incidencias. El archivo `docs/03-incidencias.md` sigue en el repositorio como copia versionada y se mantiene al día.
+
+**Hecho (14/11/2026):**
+- GLPI 12.0.1 reactivado en `docker01` y API legacy activada, con un cliente de API limitado a la IP interna de Docker.
+- Las 27 incidencias existentes importadas con un script en Python (`importar_incidencias.py`) que lee el archivo del repositorio y crea un ticket por incidencia, en estado Cerrado. El script es una prueba en seco por defecto, guarda qué incidencias ya subió y no duplica.
+- Incidencia 29 creada con el mismo procedimiento. La 28 queda reservada para el caso de verificación de Google Cloud.
+
+**Cómo se crea una incidencia nueva:** se añade al archivo del repositorio, se copia a `docker01` y se ejecuta el script con `--only N --apply`.
+
+**Pendiente:**
+1. Criterio de **publicable** en GLPI (por ejemplo, una categoría que se asigna solo tras revisar el ticket).
+2. Flujo **GLPI → n8n → web**: n8n lee solo los tickets publicables, los sanea y los publica hacia fuera. Solo tráfico saliente.
+3. Esperar a la **Fase I**: de ella depende dónde y cómo se publican Estado e Incidencias.
+
+---
+
+## 13. Registro de cambios
+
+| Fecha | Cambio |
+|---|---|
+| 13/11/2026 | Fase A cerrada: copia cifrada a Drive, copias en modo «Todo», `docker01` a 4 GB, `mail-to-root` quitado, A5 descartado por decisión. Repositorio renombrado a `bastion` y publicado. Fase I añadida al plan |
+| 13/11/2026 | `lab01` creado (CT 102) y arrancado, con *nesting* activado |
+| 14/11/2026 | Paperless apagado de verdad. GLPI reactivado. 27 incidencias importadas a GLPI por API. Incidencia 29 registrada |
+

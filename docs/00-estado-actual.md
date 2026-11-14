@@ -22,9 +22,9 @@ Un servidor físico de segunda mano (50 €) con Proxmox VE, sin ningún puerto 
 | Alertas | ntfy al móvil desde Proxmox, Kuma, Healthchecks y n8n | ✅ |
 | Copias | Regla 3-2-1 completa: diarias en modo `Todo` en local + copia nocturna cifrada con `rclone` a Google Drive (restauración probada) | ✅ |
 | Plataforma | VM `docker01` endurecida con Docker Compose y 4 GB de RAM | ✅ |
-| Servicios | Nginx Proxy Manager, Homepage, n8n; Paperless-ngx y GLPI apagados a propósito | ✅ |
+| Servicios | Nginx Proxy Manager, Homepage, n8n y GLPI; Paperless-ngx apagado a propósito | ✅ |
 | IA | Informe semanal con Gemini y agente de operaciones por chat | ✅ |
-| Documentación | Inventario como fuente de verdad, 27 incidencias, memorias por fase | ✅ |
+| Documentación | Inventario como fuente de verdad, 28 incidencias (en GLPI y en este repositorio), memorias por fase | ✅ |
 
 ```mermaid
 flowchart LR
@@ -128,7 +128,7 @@ Primer laboratorio dentro del PC de casa, que sirvió para aprender las bases y 
 | **Nginx Proxy Manager** | Acceso por nombre (`kuma.home.arpa`…) sin recordar IP ni puertos | Proxy hosts por nombre, *websockets* donde hace falta, *Block Common Exploits*. Proxmox no pasa por el proxy (ya va por HTTPS) | Verificado con `curl -H "Host: …"`: el DNS apunta al proxy y el proxy decide el destino |
 | **Homepage** | Panel de entrada diario, sobre todo desde el móvil | Widgets en vivo de Proxmox, Pi-hole, Kuma y hardware (Glances), cada uno con su credencial de solo lectura. **Sin socket de Docker montado** | Mínimo privilegio también para los paneles; los enlaces usan nombres y las comprobaciones usan IP |
 | **Paperless-ngx** | Gestión documental con OCR en español e inglés | Compose oficial con PostgreSQL 18 y Valkey, volúmenes con nombre | `run` crea un contenedor nuevo; `exec` entra en el existente (incidencia 22). **Apagado** para liberar RAM |
-| **GLPI** | Tickets e inventario (ITSM) | Imagen oficial + MariaDB 11.4 fijada, *healthcheck* antes de instalar | Comprobar el UID del contenedor antes de usar *bind mounts* (incidencia 21). **Apagado** mientras no se use |
+| **GLPI** | Tickets e inventario (ITSM) | Imagen oficial + MariaDB 11.4 fijada, *healthcheck* antes de instalar | Comprobar el UID del contenedor antes de usar *bind mounts* (incidencia 21). **Encendido** desde el 14/11/2026 como fuente de las incidencias, con la API activada |
 | **n8n** | Automatización e IA | Contenedor con clave de cifrado propia, zona horaria de Madrid, vigilado por Kuma | Ver punto 9 |
 
 ## 9. Inteligencia artificial aplicada a la operación

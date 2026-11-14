@@ -2,7 +2,7 @@
 
 > Fuente de verdad de equipos, direcciones, servicios y configuración del proyecto **Bastión** (antes "Homelab").
 > **Aquí nunca van contraseñas, claves, tokens ni el nombre del tema de ntfy.** Las credenciales están en mi gestor de contraseñas.
-> Última actualización: 13/11/2026. Estados: ✅ funcionando · 🔄 en curso · ⏸️ apagado a propósito · 📦 recibido, sin montar · 🔜 planificado/pendiente · 🗑️ a retirar/retirado · ⚠️ sin confirmar
+> Última actualización: 14/11/2026. Estados: ✅ funcionando · 🔄 en curso · ⏸️ apagado a propósito · 📦 recibido, sin montar · 🔜 planificado/pendiente · 🗑️ a retirar/retirado · ⚠️ sin confirmar
 
 ---
 
@@ -32,10 +32,10 @@
 | 192.168.1.242 | **pve01** | Anfitrión Proxmox VE | OptiPlex 7020 | ✅ |
 | 192.168.1.243 | **kuma01** | Uptime Kuma (CT 100) | pve01 | ✅ |
 | 192.168.1.244 | **pihole01** | Pi-hole (CT 101) | pve01 | ✅ |
-| 192.168.1.245 | lab01 | Contenedor de prácticas de Linux (CT 102) | pve01 | 🔜 |
+| 192.168.1.245 | lab01 | Contenedor de prácticas de Linux (CT 102) | pve01 | ✅ |
 | 192.168.1.246 | ansible01 | Nodo de control de Ansible | pve01 | 🔜 propuesta |
 | 192.168.1.247 | rocky-srv-01 | Rocky Linux, miembro del dominio | pve01 | 🔜 propuesta |
-| 192.168.1.248 | **docker01** | VM Debian 13 con Docker (NPM, Homepage, n8n, Paperless ⏸️, GLPI ⏸️) | pve01 | ✅ |
+| 192.168.1.248 | **docker01** | VM Debian 13 con Docker (NPM, Homepage, n8n, GLPI, Paperless ⏸️) | pve01 | ✅ |
 
 IP libres para servicios nuevos: `.240` y de `.249` en adelante. **Actualizar esta tabla cada vez.**
 
@@ -128,7 +128,7 @@ IP libres para servicios nuevos: `.240` y de `.249` en adelante. **Actualizar es
 |---|---|---|---|---|---|---|
 | 100 | kuma01 | LXC sin privilegios (nesting=1), `onboot=1` | Debian 13 | 1 núcleo · 512 MB · swap 512 · 4 GB | .243 | ✅ |
 | 101 | pihole01 | LXC sin privilegios, `onboot=1` | Debian 13 | 1 núcleo · 512 MB · swap 512 · 4 GB | .244 | ✅ |
-| 102 | lab01 | LXC sin privilegios | Debian 13 | 1 núcleo · 512 MB · 4 GB | .245 | 🔜 (instantánea `limpio`) |
+| 102 | lab01 | LXC sin privilegios | Debian 13 | 1 núcleo · 512 MB · 4 GB | .245 | ✅ Creado y arrancado el 13/11/2026, con *nesting* activado · ⚠️ confirmar instantánea `limpio` |
 | 103 | docker01 | VM, `onboot=1` | Debian 13 | 2 vCPU (`host`) · **4 GB con ballooning (mín. 2 GB)** · 20 GB | .248 | ✅ |
 | — | ansible01 | LXC | Debian 13 | ligero | .246 | 🔜 |
 | — | rocky-srv-01 | VM | Rocky Linux | ~1,5 GB | .247 | 🔜 |
@@ -147,8 +147,8 @@ Plantilla descargada: `debian-13-standard_13.1-2_amd64.tar.zst`. Todos los conte
 | SSH | Usuario `martin` con `sudo` y en el grupo `docker`. Solo clave Ed25519; `PermitRootLogin no` y `PasswordAuthentication no` en `sshd_config.d/01-hardening.conf`. Claves autorizadas: PC de casa (cuenta `Martin_`) y portátil de Aranjuez. ⚠️ Confirmar `sudo sshd -T \| grep passwordauthentication` → `no` |
 | Docker | Docker Engine + Compose v5.6.1 desde el repositorio oficial de Docker |
 | Organización | Un directorio por servicio: `/opt/<servicio>/compose.yaml`. Secretos en `.env` con permisos 600 |
-| Puertos usados | 80 / 81 / 443 (NPM) · 3000 (Homepage) · 5678 (n8n) · 8000 (Paperless ⏸️) · 8080 (GLPI ⏸️) |
-| Instantáneas | `base`, `npm-ok`, `glpi-ok`, `paperless-ok`, `n8n-ok` ⚠️ (si se hizo), `n8n-informe-ok` ⚠️ (opcional) |
+| Puertos usados | 80 / 81 / 443 (NPM) · 3000 (Homepage) · 5678 (n8n) · 8000 (Paperless ⏸️) · 8080 (GLPI) |
+| Instantáneas | `base`, `npm-ok`, `glpi-ok`, `paperless-ok`, `n8n-ok` ⚠️ (si se hizo), `n8n-informe-ok` ⚠️ (opcional), `antes-glpi-reactivar` y `antes-importar-incidencias` (14/11/2026) |
 
 ---
 
@@ -168,7 +168,8 @@ Plantilla descargada: `debian-13-standard_13.1-2_amd64.tar.zst`. Todos los conte
 | Restablecer contraseña | `cd /opt/uptime-kuma && npm run reset-password` |
 
 Monitores activos (ID · nombre): 1 `pve01 - Web` · 2 `pve01-ping` · 3 `Internet Casa` · 6 `pihole01 - DNS` · 7 `docker01 - Ping` · 8 `npm - Panel` · 11 `Homepage Ping` · 12 `GLANCES RENDIMIENTO` · 13 `N8N HTTP`.
-Monitores en pausa (fuera de la página de estado): 5 `glpi - Web` ⏸️ · 10 `paperless OK` ⏸️.
+Monitores en pausa (fuera de la página de estado): 10 `paperless OK` ⏸️.
+⚠️ 5 `glpi - Web`: GLPI está encendido desde el 14/11/2026; reactivar este monitor y confirmar que pasa a verde.
 ⚠️ Confirmar si existen todavía `ws-dc01 - DNS` y `ubuntu-srv-01` (no aparecen en la página de estado). Si existen, pausar el primero y borrar el segundo.
 
 ### Pi-hole — pihole01
@@ -244,14 +245,17 @@ Monitores en pausa (fuera de la página de estado): 5 `glpi - Web` ⏸️ · 10 
 | Estado | ⏸️ **Apagado desde 13/11/2026** (`docker compose stop`), datos conservados e instantánea `paperless-ok`. Monitor en pausa y bloque comentado en `services.yaml` de Homepage |
 | Encender | `cd /opt/paperless && docker compose start` |
 
-### GLPI — docker01 ⏸️
+### GLPI — docker01 ✅
 
 | Dato | Valor |
 |---|---|
 | URL | `http://glpi.home.arpa` · `http://192.168.1.248:8080` |
-| Versión | Imagen oficial `glpi/glpi` + MariaDB 11.4 (versión fijada) |
+| Versión | GLPI 12.0.1 (imagen oficial `glpi/glpi`) + MariaDB 11.4 (versión fijada) |
 | Ubicación | `/opt/glpi/compose.yaml` · credenciales en `.env` (permisos 600) · `storage/glpi` con dueño 33:33 |
-| Estado | ⏸️ **Apagado desde 04/11/2026** (`docker compose stop`), datos conservados e instantánea `glpi-ok`. Monitor en pausa y fuera de Homepage |
+| Estado | ✅ **Encendido desde 14/11/2026** (estuvo apagado del 04/11 al 14/11). Fuente real del registro de incidencias: 27 importadas más la 29 |
+| API | API legacy (`/apirest.php`) activada. Cliente de API `bastion` limitado a la IP interna de Docker (`172.19.0.1`), no a un rango abierto. Hacen falta los dos tokens: el de aplicación y el de usuario |
+| Importación | `~/glpi-import/importar_incidencias.py` en `docker01`: lee `03-incidencias.md` y crea un ticket por incidencia (`--apply`; sin esa opción es una prueba en seco; `--only N` elige cuáles) |
+| Homepage | ⚠️ Descomentar su bloque en `services.yaml` si se quiere en el panel |
 | Encender | `cd /opt/glpi && docker compose start` |
 
 ---
@@ -269,7 +273,7 @@ Monitores en pausa (fuera de la página de estado): 5 `glpi - Web` ⏸️ · 10 
 | Nginx Proxy Manager | `http://npm.home.arpa` · `http://192.168.1.248:81` |
 | n8n (editor) | `http://n8n.home.arpa` · `http://192.168.1.248:5678` |
 | Paperless-ngx ⏸️ | `http://paperless.home.arpa` · `http://192.168.1.248:8000` |
-| GLPI ⏸️ | `http://glpi.home.arpa` · `http://192.168.1.248:8080` |
+| GLPI ✅ | `http://glpi.home.arpa` · `http://192.168.1.248:8080` |
 | Glances (API) | `http://192.168.1.242:61208/api/4/status` |
 | Consola de Tailscale | `https://login.tailscale.com/admin` |
 | Healthchecks | `https://healthchecks.io` |
@@ -292,6 +296,7 @@ Fuera de casa funcionan con Tailscale activo en el móvil (router de subred). Lo
 | Clave de la API de Gemini | Gestor de contraseñas y credencial cifrada en n8n |
 | Usuario y contraseña del chat del agente (Basic Auth) | Gestor de contraseñas y credencial cifrada en n8n |
 | `N8N_ENCRYPTION_KEY` | `/opt/n8n/.env` (600) y gestor de contraseñas. Sin ella no se pueden descifrar las credenciales de n8n al restaurar |
+| Token de aplicación (cliente de API `bastion`) y token de usuario de GLPI | Gestor de contraseñas. No se guardan en archivos; el script los lee de variables de entorno |
 | Credenciales de bases de datos (GLPI, Paperless) | `.env` / archivo de configuración de cada servicio en `/opt/<servicio>/` (permisos 600) |
 | Clave privada SSH | Solo en cada cliente (PC `Martin_`, portátil de Aranjuez y móvil). Nunca se copia entre equipos |
 | Contraseñas de cifrado de rclone (archivos y nombres) y Client ID / Secret OAuth | Gestor de contraseñas (imprescindibles para restaurar las copias desde Google Drive si se pierde `pve01`) |
