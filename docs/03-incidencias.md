@@ -38,6 +38,7 @@
 | 25 | 09/11/2026 | n8n | El chat público del agente rechaza la conexión | Redirección de la autenticación n8n User Auth |
 | 26 | 13/11/2026 | Google Cloud / rclone | Bloqueo `403: access_denied` al autorizar rclone | App OAuth en modo prueba sin usuarios autorizados ni URLs de marca |
 | 27 | 13/11/2026 | Copias / ntfy | El script sube a Drive pero no llega el aviso a ntfy | Barras invertidas en `grep` con `pipefail` y marcador del tema sin sustituir |
+| 29 | 14/11/2026 | GLPI / API | La API rechaza el acceso con `ERROR_NOT_ALLOWED_IP` y errores de token | IP de Docker no permitida y confusión entre token de aplicación y de usuario |
 
 ---
 
@@ -192,6 +193,12 @@
 - **Causa:** dos problemas combinados en el bloque de notificación: (1) la expresión `grep -o '\"count\":[0-9]*'` buscaba literalmente barras invertidas en la salida JSON de `rclone size`, fallando al estar activo `set -euo pipefail`, y (2) la variable `NTFY_URL` todavía conservaba el marcador de posición en vez del tema real.
 - **Solución:** sustituir el patrón por `grep -o '"count":[0-9]*'`, poner el tema real en `NTFY_URL` y volver a ejecutar `/usr/local/bin/backup-to-drive.sh`. La comprobación tardó segundos y entregó la notificación con `"count":10`.
 - **Aprendizaje:** con `set -euo pipefail`, cualquier comando dentro de una sustitución `$(...)` que devuelva código distinto de cero detiene el script antes de llegar a la línea siguiente; siempre hay que probar la notificación de extremo a extremo.
+### Incidencia 29 — La API de GLPI rechaza el acceso con `ERROR_NOT_ALLOWED_IP` y luego con errores de token
+- **Síntoma:** al probar `initSession` con `curl` desde `docker01` contra `localhost:8080`, la API devolvió tres errores seguidos: `ERROR_NOT_ALLOWED_IP` (con la IP `172.19.0.1`), después `ERROR_APP_TOKEN_PARAMETERS_MISSING` y por último `ERROR_GLPI_LOGIN_USER_TOKEN`.
+- **Diagnóstico:** lectura literal de cada mensaje (regla 1). GLPI comprueba en orden la IP, el token de aplicación y el token de usuario, así que cada error resuelto dejaba ver el siguiente. El primer mensaje ya indicaba la IP exacta con la que GLPI veía la petición.
+- **Causa:** tres problemas encadenados: (1) el cliente de API solo admitía `127.0.0.1`, pero al entrar por el puerto publicado de Docker, GLPI veía la IP de la puerta de enlace de la red interna (`172.19.0.1`); (2) el cliente exigía el token de aplicación y la primera prueba solo mandaba el de usuario; (3) el token pegado como "de usuario" era en realidad el del cliente de API, porque son dos tokens distintos en dos pantallas distintas.
+- **Solución:** añadir `172.19.0.1` al rango del cliente de API (solo esa IP, no un rango abierto); copiar el token de aplicación desde el cliente de API; regenerar el token de usuario en la configuración personal (marcar *Regenerar* y *Guardar* antes de copiarlo); y mandar las dos cabeceras (`Authorization: user_token ...` y `App-Token: ...`). Los tokens se cargaron con `read -rs` para que no quedaran en el historial.
+- **Aprendizaje:** un mensaje de error que cambia tras un arreglo es progreso, no fracaso: significa que has pasado una comprobación. Desde un contenedor, el origen de una petición puede ser la puerta de enlace de Docker y no `localhost`. Y antes de pegar un secreto, comprobar su longitud (`echo ${#VAR}`) evita confundir dos tokens parecidos.
 
 ---
 
