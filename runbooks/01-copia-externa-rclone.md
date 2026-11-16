@@ -168,7 +168,7 @@ set -euo pipefail
 
 ORIGEN="/var/lib/vz/dump"
 DESTINO="gcrypt:"
-NTFY_URL="https://ntfy.sh/TU-TEMA-NTFY"
+NTFY_URL="https://ntfy.sh/<TU-TEMA-NTFY>"
 
 # Sincroniza solo los archivos de copia, no logs ni notas
 if rclone sync "$ORIGEN" "$DESTINO" \

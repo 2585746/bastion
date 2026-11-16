@@ -1,6 +1,6 @@
 # Bastión — Lo construido hasta hoy
 
-> Estado del proyecto a **13/11/2026**: qué hay montado, en qué orden se hizo y cómo se comprobó cada pieza.
+> Estado del proyecto a **16/11/2026**: qué hay montado, en qué orden se hizo y cómo se comprobó cada pieza.
 > Documento público: no contiene contraseñas, tokens, claves, el nombre de la tailnet ni el tema de ntfy. Las IP que aparecen son privadas (RFC 1918).
 > El detalle técnico vivo está en `inventario.md`; los problemas, en `incidencias.md`; lo que viene, en `plan-maestro.md`.
 
@@ -14,7 +14,7 @@ Un servidor físico de segunda mano (50 €) con Proxmox VE, sin ningún puerto 
 
 | Capa | Qué hay | Estado |
 |---|---|---|
-| Hardware | Dell OptiPlex 7020 (i5-4590, 16 GB, SSD 240 GB) validado con Memtest86+ y SMART | ✅ · ampliación a 24 GB + 2 discos recibida, sin montar |
+| Hardware | Dell OptiPlex 7020 (i5-4590, **24 GB**, SSD 240 GB) validado con Memtest86+ y SMART | ✅ · RAM ampliada a 24 GB; HDD de 2 TB pendiente de conectar |
 | Hipervisor | Proxmox VE 9.2 en UEFI, repositorio sin suscripción, 2FA en todas las cuentas | ✅ |
 | Acceso remoto | Tailscale como router de subred; ningún puerto abierto en casa | ✅ |
 | DNS | Pi-hole (filtrado + nombres locales `*.home.arpa`) para la tailnet | ✅ |
@@ -155,6 +155,8 @@ Primer laboratorio dentro del PC de casa, que sirvió para aprender las bases y 
 
 | Pendiente | Por qué importa |
 |---|---|
-| Sesión de hardware (24 GB, SSD para VM, HDD de 2 TB) | Memoria para el SOC y disco dedicado a copias |
+| ~~RAM a 24 GB~~ | **Hecho (16/11/2026):** ya hay memoria para el SOC |
+| ~~SSD Kingston como `vmdata`~~ | **Descartado (16/11/2026):** el Kingston no va al servidor; los discos de las VM siguen en `local-lvm` |
+| Conectar el HDD de 2 TB | Disco dedicado a copias y volver a la retención de 7 diarias + 2 semanales |
 | ~~SSH de pve01 solo con clave (paso A5)~~ | **Descartado por decisión (13/11/2026):** se mantiene el acceso por `root` y por `martin` |
 | Subir el repositorio `bastion` a GitHub (paso A7) | Respaldo de código y portafolio verificable |

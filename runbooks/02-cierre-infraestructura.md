@@ -162,7 +162,7 @@ git clone https://github.com/2585746/bastion.git
 **4. Busca secretos antes de subir nada** (esto es lo importante):
 
 ```
-git grep -nIE "ntfy\.sh/[A-Za-z0-9_-]+|PVEAPIToken=|BEGIN OPENSSH|password\s*[:=]" -- . ; git status
+git grep -nIE "ntfy\.sh/[A-Za-z0-9_-]+|PVEAPIToken[=]|BEGIN[ ]OPENSSH|password\s*[:=]" -- . ; git status
 ```
 
 `git grep` busca patrones en los archivos: temas de ntfy, tokens de Proxmox, claves privadas y contraseñas. Si sale algo que no sea un ejemplo (`TU-TEMA-NTFY`), bórralo del archivo antes de continuar. `git status` lista lo que se va a subir.

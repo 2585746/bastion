@@ -1,7 +1,7 @@
 # Bastión — Plan maestro
 
 > Hoja de ruta por fases del proyecto **Bastión**. Define qué se monta, cuándo, cuánto ocupa de recursos y crédito, cómo se hace migrable y cómo encaja con la nube y la web.
-> Fecha: 14/11/2026. Se actualiza al cerrar cada fase.
+> Fecha: 16/11/2026. Se actualiza al cerrar cada fase.
 > Principio rector: **infraestructura como código + Docker + todo en GitHub**, para que nada quede atado a un proveedor.
 
 ---
@@ -14,11 +14,12 @@
 
 ---
 
-## Estado al 14/11/2026
+## Estado al 16/11/2026
 
 | Fase | Estado |
 |---|---|
 | **A** | A1 (copia cifrada con rclone), A2 (copias en modo «Todo»), A3 (docker01 a 4 GB), A4 (Paperless apagado) y A6 (`mail-to-root` quitado) **hechos**. A5 (SSH solo con clave) **descartado por decisión**. Cambio del tema de ntfy **descartado por decisión**. A7 (Bastión en GitHub) **hecho**: la fase A queda **cerrada** |
+| **B** | RAM a **24 GB hecha**. El Kingston A400 **ya no va al servidor**: se quita `vmdata` y los discos de las VM siguen en `local-lvm`. **Pendiente:** conectar el HDD de 2 TB |
 | **C** | C1: el contenedor de prácticas `lab01` está creado y arrancado (con *nesting* activado); el estudio de Linux se hace con un curso. C2 y C3 (Ansible) pendientes |
 | **D** | D1: proyecto de Google Cloud creado, con presupuesto de 90 €/mes y alertas al 50, 90 y 100 %; la vinculación de facturación espera la verificación de Google. D2: sitio Astro publicado en GitHub Pages con el dominio `martindeprada.dev` y HTTPS (fases 1, 2 y 2b de la web hechas). D3 y D5 pendientes |
 | **I** | Nueva. Sin empezar. Es lo siguiente: desbloquea cómo se publican Estado e Incidencias en la web |
@@ -31,12 +32,12 @@
 | Fase | Nombre | Cuándo | Depende de |
 |---|---|---|---|
 | **A** | Cerrar la infraestructura (3-2-1, limpieza, GitHub) | ✅ Cerrada el 13/11/2026 (A5 descartado) | — |
-| **B** | Hardware: 24 GB + discos | Próxima visita a Yepes | Tener la sesión presencial |
+| **B** | Hardware: 24 GB + HDD de 2 TB | RAM ✅ (16/11/2026); HDD en la próxima sesión presencial | Tener la sesión presencial |
 | **C** | Base de automatización: Linux + Ansible | En paralelo con las clases | lab01 montado |
 | **D** | Nube 1 — Web pública + dominio (Google Cloud) | Al activar el Student Pack (dominio) | Fase A |
 | **I** | Publicar servicios: ¿abrir puertos o salir a la red? | Después de la web | Fase D (y conviene la E para vigilarlo) |
-| **E** | SOC: Wazuh + honeypot + ataques controlados | Tras la fase B (RAM) | 24 GB de RAM |
-| **F** | Reconstrucción de Active Directory en Proxmox | Tras la fase B | 24 GB de RAM |
+| **E** | SOC: Wazuh + honeypot + ataques controlados | Desbloqueada (RAM hecha) | 24 GB de RAM ✅ |
+| **F** | Reconstrucción de Active Directory en Proxmox | Desbloqueada (RAM hecha) | 24 GB de RAM ✅ |
 | **G** | Nube 2 — Laboratorios bajo demanda (Azure/AWS) | Antes de que caduque Google | Fase D probada |
 | **H** | Migración a Oracle Always Free + cierre de Google | ~2 semanas antes de que caduque Google | Fase D |
 
@@ -64,14 +65,16 @@ El objetivo es dejar la base "terminada" antes de construir encima. Son tareas c
 
 ## 3. Fase B — Hardware (sesión presencial en Yepes)
 
-Todo junto para abrir el equipo una sola vez. Está detallado en el contexto del proyecto; en resumen:
+| Paso | Qué | Estado |
+|---|---|---|
+| B1 | RAM a **24 GB** (quitar el módulo "Noname", un módulo de 8 por canal) | ✅ Hecho (16/11/2026) |
+| B2 | ~~**Kingston A400** como LVM-Thin `vmdata` para los discos de las VM; mover ahí docker01~~ | ⏹️ Descartado (16/11/2026): el Kingston no va al servidor. Se quita `vmdata`; los discos de las VM siguen en `local-lvm` (SSD del sistema) |
+| B3 | **HDD de 2 TB** para las copias (volver la retención a 7 diarias + 2 semanales) y, más adelante, Jellyfin | ⏳ Pendiente de conectar |
+| B4 | Pasta térmica, Memtest86+ y SMART largo del HDD | ⏳ El SMART largo va con B3 |
 
-1. RAM a **24 GB** (quitar el módulo "Noname", un módulo de 8 por canal).
-2. **Kingston A400** como LVM-Thin `vmdata` para los discos de las VM; mover ahí docker01.
-3. **HDD de 2 TB** para las copias (volver la retención a 7 diarias + 2 semanales) y, más adelante, Jellyfin.
-4. Pasta térmica, Memtest86+ y SMART largo del HDD.
+Con la RAM hecha ya hay memoria para Wazuh (5–7 GB): **la fase E queda desbloqueada**. Lo que falta de esta fase (el HDD) solo afecta a las copias.
 
-Sin esta fase no hay memoria para Wazuh (5–7 GB), así que **la fase E depende de esta**.
+> Los runbooks que usan `vmdata` (`03-hardware.md`, `04-linux-y-ansible.md`, `06-soc-wazuh.md`, `07-active-directory.md`) deben pasar a `local-lvm`.
 
 ---
 
@@ -181,7 +184,7 @@ flowchart LR
 - Instantánea de la máquina objetivo antes de cada prueba, para restaurarla después.
 
 ### Encaje en memoria (24 GB)
-Wazuh pide 5–7 GB, por eso espera a la fase B. Kali va en el PC, no en el servidor. La máquina objetivo y Cowrie son ligeras.
+Wazuh pide 5–7 GB; con la RAM ya en 24 GB (fase B1) cabe. Sin `vmdata`, sus discos van en `local-lvm`, así que hay que vigilar el espacio del SSD del sistema. Kali va en el PC, no en el servidor. La máquina objetivo y Cowrie son ligeras.
 
 ---
 
@@ -226,6 +229,7 @@ bastion/
 │   ├── 01-inventario.md       → fuente de verdad (sin secretos)
 │   ├── 03-incidencias.md      → los 27 fallos y su solución
 │   ├── plan-maestro.md        → este documento
+│   ├── bitacora.md            → diario de cambios fechado
 │   └── memorias/              → las memorias por fecha
 ├── runbooks/
 │   └── 01-copia-externa-rclone.md
@@ -271,4 +275,5 @@ El estado de cada fase se lleva en `docs/ROADMAP.md` con casillas, y cada hito c
 | 13/11/2026 | Fase A cerrada: copia cifrada a Drive, copias en modo «Todo», `docker01` a 4 GB, `mail-to-root` quitado, A5 descartado por decisión. Repositorio renombrado a `bastion` y publicado. Fase I añadida al plan |
 | 13/11/2026 | `lab01` creado (CT 102) y arrancado, con *nesting* activado |
 | 14/11/2026 | Paperless apagado de verdad. GLPI reactivado. 27 incidencias importadas a GLPI por API. Incidencia 29 registrada |
+| 16/11/2026 | Fase B: RAM a 24 GB hecha. El Kingston ya no va al servidor (se quita `vmdata`). Pendiente conectar el HDD de 2 TB. Fases E y F desbloqueadas |
 

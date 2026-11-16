@@ -53,9 +53,9 @@ IP libres para servicios nuevos: `.240` y de `.249` en adelante. **Actualizar es
 
 | Dispositivo | IP de Tailscale | Caducidad de clave | Notas |
 |---|---|---|---|
-| pve01 | 100.x.y.z | Desactivada | Servidor |
-| pixel-10a | 100.x.y.z | Desactivada | Móvil, uso remoto principal (chat del agente, Homepage) |
-| ubuntusrv | 100.x.y.z | Desactivada | 🗑️ ⚠️ Confirmar que se quitó de la tailnet; si ya no está, borrar esta fila |
+| pve01 | ver gestor de contraseñas | Desactivada | Servidor |
+| pixel-10a | ver gestor de contraseñas | Desactivada | Móvil, uso remoto principal (chat del agente, Homepage) |
+| ubuntusrv | ver gestor de contraseñas | Desactivada | 🗑️ ⚠️ Confirmar que se quitó de la tailnet; si ya no está, borrar esta fila |
 
 ---
 
@@ -267,7 +267,7 @@ Monitores en pausa (fuera de la página de estado): 10 `paperless OK` ⏸️.
 | Homepage (entrada principal) | `http://homepage.home.arpa` · `http://192.168.1.248:3000` |
 | Agente Bastión (chat) | `http://n8n.home.arpa/webhook/<id>/chat` (Basic Auth) |
 | Proxmox | `https://192.168.1.242:8006` · `https://pve.home.arpa:8006` |
-| Proxmox (respaldo por IP de Tailscale) | `https://100.x.y.z:8006` |
+| Proxmox (respaldo por IP de Tailscale) | `https://ver gestor de contraseñas:8006` |
 | Uptime Kuma | `http://kuma.home.arpa` · `http://192.168.1.243:3001` |
 | Pi-hole | `http://pihole.home.arpa/admin` · `http://192.168.1.244/admin` |
 | Nginx Proxy Manager | `http://npm.home.arpa` · `http://192.168.1.248:81` |
