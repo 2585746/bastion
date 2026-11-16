@@ -33,7 +33,7 @@ Bastión es el homelab de Martín en casa: un servidor Proxmox (`pve01`) con con
 
 ## Brand Commitments
 
-`AGENTS.md` ya fija el estilo visual del proyecto (tema oscuro, acento rojo `#E02B2F`, fuente Poppins, esquinas rectas). Se anota aquí tal como está en ese archivo; no se amplía.
+El acento rojo `#E02B2F` es la seña de identidad y se mantiene. Desde el 16/11/2026 la web usa tema claro inspirado en impeccable.style (decisión de Martín); el sistema completo está en `DESIGN.md` de `bastion-web` y la regla resumida en `AGENTS.md`.
 
 ## Evidence on Hand
 

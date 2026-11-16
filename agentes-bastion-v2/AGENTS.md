@@ -57,4 +57,4 @@ Formato de la bitácora:
 
 - **Incidencias:** se numeran en `docs/03-incidencias.md`. La 28 está reservada; la siguiente libre es la 30. Formato `### Incidencia N — título` con los apartados Síntoma, Diagnóstico, Causa, Solución y Aprendizaje. Cada incidencia nueva se crea también en GLPI, que es la fuente de la web (flujo de n8n).
 - **Web (`bastion-web`): en pausa.** No la toques salvo que Martín lo pida expresamente. Los ajustes ya decididos están en `docs/web-pendientes.md`. Ninguna automatización debe editar `src/pages/bastion/incidencias/index.astro`: los datos van solo en `src/data/bastion/incidencias.json`.
-- **Estilo visual** de cualquier cosa con diseño: tema oscuro, acento rojo `#E02B2F`, fuente Poppins, esquinas rectas.
+- **Estilo visual** de cualquier cosa con diseño: tema claro (papel y tinta casi negra) inspirado en impeccable.style, acento rojo `#E02B2F` (texto rojo `#C11A1F`), titulares en Alumni Sans, cuerpo en Albert Sans, datos en JetBrains Mono, paneles oscuros para datos y esquinas de 3–8px. El detalle está en `DESIGN.md` de `bastion-web`.
