@@ -1,6 +1,6 @@
 # Runbook 03 — Sesión de hardware (fase B)
 
-> **Objetivo:** 24 GB de RAM, un SSD dedicado a las máquinas virtuales (`vmdata`) y un disco de 2 TB para las copias.
+> **Objetivo:** 24 GB de RAM (**hecho el 16/11/2026**) y un disco de 2 TB para las copias (**pendiente**: el Samsung de 2 TB murió el 18/11/2026 y hay que comprar otro). El Kingston A400 **ya no va al servidor**: los discos de las VM siguen en `local-lvm`.
 > **Dónde:** en Yepes, con el servidor delante. **Tiempo:** una tarde (Memtest86+ y el SMART largo tardan horas, pero corren solos).
 > ⚠️ Los comandos de discos **borran datos**. Identifica cada disco por modelo y tamaño antes de ejecutar nada.
 
@@ -37,9 +37,8 @@ Desenchufa el cable de corriente y pulsa el botón de encendido unos segundos pa
 ## 1. Montaje físico
 
 1. **RAM:** retira el módulo "Noname". Coloca los dos de 8 GB y los dos Hynix de 4 GB de forma que haya **un módulo de 8 en cada canal** (en la placa, las ranuras del mismo canal comparten color). Toca el chasis antes para descargar la electricidad estática.
-2. **Kingston A400:** en la bahía del lector de DVD con el adaptador *caddy*.
-3. **HDD de 2 TB:** en la bahía de 3,5", con su cable SATA y alimentación.
-4. **Pasta térmica:** limpia la antigua con alcohol isopropílico y aplica una cantidad pequeña, como un grano de arroz, en el centro del procesador.
+2. **HDD de 2 TB:** en la bahía de 3,5", con su cable SATA y alimentación. (El Samsung original murió; usa el disco de reemplazo.)
+3. **Pasta térmica:** limpia la antigua con alcohol isopropílico y aplica una cantidad pequeña, como un grano de arroz, en el centro del procesador.
 
 ---
 
@@ -67,17 +66,17 @@ dmidecode -t memory | grep -E "Size|Locator|Speed" | grep -v Bank
 lsblk -o NAME,SIZE,MODEL,SERIAL,MOUNTPOINT
 ```
 
-Compara con la captura del paso 0. El Kingston (240 GB) y el Samsung HD203WI (2 TB) aparecerán sin punto de montaje. **Apunta sus nombres** (por ejemplo `sdb` y `sdc`). En los comandos siguientes, `sdX` es el Kingston y `sdY` el HDD: sustitúyelos por los tuyos.
+Compara con la captura del paso 0. El HDD de 2 TB aparecerá sin punto de montaje. **Apunta su nombre** (por ejemplo `sdb`). En los comandos siguientes, `sdY` es el HDD: sustitúyelo por el tuyo.
 
 > ⚠️ `sda` es el disco del sistema. Si un comando de borrado apunta a `sda`, **para**.
 
-**4. Prueba larga del HDD** (tiene 16 años; hay que saber si es de fiar):
+**4. Prueba larga del HDD** (hay que saber si es de fiar antes de guardar copias en él):
 
 ```
 smartctl -t long /dev/sdY
 ```
 
-Lanza la prueba completa de superficie en segundo plano (varias horas). Puedes seguir con el SSD mientras tanto. Mira el resultado después con:
+Lanza la prueba completa de superficie en segundo plano (varias horas). Mira el resultado después con:
 
 ```
 smartctl -a /dev/sdY | grep -E "result|Reallocated_Sector|Current_Pending|Offline_Uncorrectable"
@@ -87,61 +86,13 @@ smartctl -a /dev/sdY | grep -E "result|Reallocated_Sector|Current_Pending|Offlin
 
 ---
 
-## 3. Kingston como almacenamiento de VM (`vmdata`)
+## 3. Almacenamiento de las VM (sin cambios)
 
-**1. Borra las firmas antiguas** (tiene las particiones del Windows clonado):
-
-```
-wipefs -a /dev/sdX && sgdisk --zap-all /dev/sdX
-```
-
-`wipefs -a` elimina las firmas de sistemas de archivos y `sgdisk --zap-all` borra las tablas de particiones. **Irreversible.**
-
-**2. Crea el volumen LVM:**
-
-```
-pvcreate /dev/sdX
-vgcreate vmdata /dev/sdX
-lvcreate -l 95%FREE --thinpool data vmdata
-```
-
-- `pvcreate` marca el disco como volumen físico de LVM.
-- `vgcreate vmdata` crea un grupo de volúmenes llamado `vmdata`.
-- `lvcreate --thinpool` crea un *thin pool*: un espacio donde los discos virtuales solo ocupan lo que realmente usan. Se deja un 5 % libre para los metadatos.
-
-**3. Añádelo a Proxmox:**
-
-```
-pvesm add lvmthin vmdata --vgname vmdata --thinpool data --content images,rootdir
-```
-
-`pvesm add` registra un almacenamiento; `images,rootdir` indica que acepta discos de VM y de contenedores. Comprueba:
-
-```
-pvesm status
-```
-
-Debe aparecer `vmdata` como `active`.
-
-**4. Mueve el disco de docker01** (se puede hacer con la VM encendida):
-
-```
-qm disk move 103 scsi0 vmdata --delete 1
-```
-
-Mueve el disco `scsi0` de la VM 103 al almacenamiento nuevo; `--delete 1` borra la copia antigua al terminar. Tarda unos minutos. Comprueba:
-
-```
-qm config 103 | grep scsi0
-```
-
-Debe empezar por `vmdata:`.
-
-**Por qué:** las VM dejan de escribir en el TR200 gastado, y si un disco muere no se lleva todo.
+Decisión del 16/11/2026: el Kingston A400 no va al servidor, así que **no se crea `vmdata`**. Los discos de las VM y los contenedores se quedan en `local-lvm` (SSD del sistema), incluido el de docker01. No hay nada que hacer en este paso; vigila el espacio del SSD al añadir VM (Wazuh, controlador de dominio).
 
 ---
 
-## 4. HDD de 2 TB para las copias
+## 4. HDD de 2 TB para las copias (pendiente de comprar el disco)
 
 **1. Particiona y formatea:**
 
@@ -222,8 +173,7 @@ Presupuesto orientativo con 24 GB: anfitrión 1,5 · contenedores 1,5 · docker0
 
 - [ ] Memtest86+ sin errores, `free -h` ≈ 23 Gi
 - [ ] SMART largo del HDD `Completed without error`
-- [ ] `pvesm status` muestra `vmdata` y `hdd-backup` activos
-- [ ] Disco de docker01 en `vmdata`
+- [ ] `pvesm status` muestra `hdd-backup` activo
 - [ ] Copia diaria en el HDD con retención 7 + 2, y subida a Drive funcionando desde la ruta nueva
 - [ ] Temperatura en reposo igual o mejor que antes (Homepage)
 - [ ] Inventario (sección 4 y 5) y ROADMAP actualizados

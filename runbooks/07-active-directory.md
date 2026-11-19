@@ -20,15 +20,15 @@ En **pve01** (ajusta el nombre de la ISO al tuyo):
 ```
 qm create 110 --name ws-dc01 --ostype win11 --machine q35 --bios ovmf \
   --cores 2 --cpu host --memory 3072 --balloon 0 \
-  --scsihw virtio-scsi-single --scsi0 vmdata:60,discard=on,ssd=1,iothread=1 \
-  --efidisk0 vmdata:1,efitype=4m,pre-enrolled-keys=1 --tpmstate0 vmdata:1,version=v2.0 \
+  --scsihw virtio-scsi-single --scsi0 local-lvm:60,discard=on,ssd=1,iothread=1 \
+  --efidisk0 local-lvm:1,efitype=4m,pre-enrolled-keys=1 --tpmstate0 local-lvm:1,version=v2.0 \
   --net0 virtio,bridge=vmbr0 --agent 1 --onboot 1 \
   --ide2 local:iso/WINDOWS-SERVER.iso,media=cdrom --ide0 local:iso/virtio-win.iso,media=cdrom
 ```
 
 - `--bios ovmf` + `efidisk0` + `tpmstate0`: arranque UEFI con TPM, como un servidor moderno.
 - `--balloon 0`: un controlador de dominio necesita memoria fija.
-- `scsi0 vmdata:60`: disco de 60 GB en el SSD de las VM.
+- `scsi0 local-lvm:60`: disco de 60 GB en el SSD del sistema (`local-lvm`).
 - Las dos unidades `ide`: el instalador y los controladores VirtIO.
 
 Arráncala y abre la consola. Durante la instalación:

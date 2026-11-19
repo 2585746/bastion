@@ -4,6 +4,11 @@
 
 ---
 
+### 2026-11-19 · Claude Code
+- Hecho: el HDD Samsung de 2 TB murió el 18/11 (no se detecta en ningún puerto y hace ruido de clic). La fase B queda pendiente de comprar otro disco. ROADMAP actualizado (B1 hecho, B2 descartado, B3 pendiente de disco nuevo) y runbooks 03, 04, 06 y 07 pasados de `vmdata` a `local-lvm`. Los archivos de agentes (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.gemini/`) pasan a la raíz y se borra `agentes-bastion-v2/`.
+- Decisiones: se elimina el rediseño claro de la web: la regla de estilo vuelve a tema oscuro, acento rojo `#E02B2F`, fuente Poppins y esquinas rectas (colores planeados originalmente), en `AGENTS.md` y `PRODUCT.md`.
+- Pendiente: comprar el disco de 2 TB y retomar B3/B4; revertir en `bastion-web` el rediseño claro publicado (commit `6ba8945` y `DESIGN.md`), que no se ha tocado; revisar `docs/00-estado-actual.md`, `docs/01-inventario.md` y `docs/plan-maestro.md`, que aún mencionan el HDD de 2 TB como pendiente de conectar y el Kingston.
+
 ### 2026-11-16 · Claude Code
 - Hecho: añadidas las instrucciones comunes para agentes (`agentes-bastion-v2/`), limpiados los marcadores de IP de Tailscale del inventario y dos falsos positivos del escaneo de privacidad. Instalado el plugin de diseño Impeccable: `PRODUCT.md` aquí; `DESIGN.md` y crítica (20/28) en `bastion-web`. Publicada en la web la mejora de `/bastion` (commit `6ba8945`): resumen por capa con detalle plegado, «entrada de guardia» con cifras, cierre con enlaces, pestañas adaptadas a móvil.
 - Decisiones: la web muestra las incidencias publicadas contadas desde `incidencias.json` (hoy 3), no la cifra escrita a mano (27). Versión de Proxmox, monitores y fecha de los datos viven en `facts` (`src/data/bastion.ts`).

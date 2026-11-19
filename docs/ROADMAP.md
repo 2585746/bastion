@@ -1,7 +1,7 @@
 # Bastión — ROADMAP y seguimiento
 
 > Tablero de progreso. Cada casilla marcada es un hito verificable (un *commit*, una incidencia cerrada, un servicio en marcha).
-> Actualizado: 14/11/2026.
+> Actualizado: 19/11/2026.
 
 ## Leyenda
 `[x]` hecho · `[~]` en curso · `[ ]` pendiente
@@ -36,10 +36,10 @@
 
 ## Fase B — Hardware (visita a Yepes)
 
-- [ ] B1 · RAM a 24 GB
-- [ ] B2 · Kingston A400 como `vmdata`, mover docker01
-- [ ] B3 · HDD de 2 TB para copias, retención a 7+2
-- [ ] B4 · Pasta térmica, Memtest86+, SMART largo del HDD
+- [x] B1 · RAM a 24 GB (16/11/2026)
+- [ ] ~~B2 · Kingston A400 como `vmdata`, mover docker01~~ — descartado (16/11/2026): las VM siguen en `local-lvm`
+- [ ] B3 · HDD de 2 TB para copias, retención a 7+2 — **pendiente de comprar otro disco**: el Samsung murió el 18/11/2026
+- [ ] B4 · Pasta térmica, Memtest86+, SMART largo del HDD nuevo
 
 ## Fase C — Linux + Ansible
 

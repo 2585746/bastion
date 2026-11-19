@@ -1,7 +1,7 @@
 # Runbook 06 — SOC con Wazuh (fase E)
 
 > **Objetivo:** un centro de operaciones de seguridad a pequeña escala: un SIEM que recoge registros de todas las máquinas, detecta comportamientos sospechosos, responde bloqueando y te resume el día con IA.
-> **Requisito:** fase B hecha (24 GB de RAM y `vmdata`).
+> **Requisito:** 24 GB de RAM (fase B1, hecha).
 > **Enfoque:** defensivo. Las "pruebas de ataque" de este runbook son acciones inofensivas y conocidas, hechas contra una máquina tuya y desechable, para comprobar que la detección funciona.
 > **Versiones:** los números de versión cambian. Usa siempre los de la [documentación oficial de Wazuh para Docker](https://documentation.wazuh.com/current/deployment-options/docker/wazuh-container.html).
 
@@ -25,7 +25,7 @@ Honeypot en la nube ────────┘         │
 
 ## 1. La VM `wazuh01`
 
-En **pve01**. Recursos: 2 vCPU, 6 GB (mínimo 4), 50 GB en `vmdata`, IP `192.168.1.249`.
+En **pve01**. Recursos: 2 vCPU, 6 GB (mínimo 4), 50 GB en `local-lvm`, IP `192.168.1.249`.
 
 Crea la VM igual que docker01 (Debian 13 netinst, QEMU agent, `onboot`), o mejor: **con tu rol `bootstrap` de Ansible**, que deja SSH endurecido y Docker instalado. Es la primera máquina "de verdad" que montas con tu automatización.
 

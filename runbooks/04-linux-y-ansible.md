@@ -19,7 +19,7 @@ pct create 102 local:vztmpl/debian-13-standard_13.1-2_amd64.tar.zst \
 
 - `pct create 102` crea el contenedor con ID 102 a partir de la plantilla.
 - `--unprivileged 1`: sin privilegios sobre el anfitrión (más seguro).
-- `--rootfs local-lvm:4`: disco de 4 GB (usa `vmdata:4` si ya hiciste la fase B).
+- `--rootfs local-lvm:4`: disco de 4 GB en el SSD del sistema.
 - `--net0 ...`: IP fija `.245` y puerta de enlace.
 - `--onboot 0`: no arranca solo; es un laboratorio.
 - `--password`: te pedirá la contraseña de root del contenedor (al gestor).
