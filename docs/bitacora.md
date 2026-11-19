@@ -4,6 +4,13 @@
 
 ---
 
+### 2026-11-19 · Claude Code (fase I)
+- Hecho: documentada la fase I. Decisión: túnel WireGuard saliente desde casa (`edge01`, CT 105) hacia un VPS en Google Cloud (`bastion-edge`, Madrid, e2-micro) con Caddy; sin puertos abiertos en el router; Cloudflare descartado por ahora. Creado `runbooks/10-tunel-wireguard-vps.md` (`wg0.conf` de los dos lados, `nftables` de `edge01`, Caddyfile y servicio de prueba, sin claves ni IP públicas). Inventario con CT 105, la VM y la red `10.66.0.0/24`; ROADMAP con I1–I3 hechos y plan maestro con la decisión.
+- Decisiones: «0 puertos abiertos» sigue siendo cierto; el riesgo se limita con `forward` denegado en `edge01` y un cortafuegos que solo deja entrar el puerto del servicio por el túnel.
+- Pendiente: I4 (adaptar la web: alojamiento, despliegue y monitor en Kuma); añadir `edge01` y la URL de prueba a Uptime Kuma; comprobar la lista de verificación del runbook 10 con las máquinas reales.
+
+---
+
 ### 2026-11-19 · Claude Code
 - Hecho: el HDD Samsung de 2 TB murió el 18/11 (no se detecta en ningún puerto y hace ruido de clic). La fase B queda pendiente de comprar otro disco. ROADMAP actualizado (B1 hecho, B2 descartado, B3 pendiente de disco nuevo) y runbooks 03, 04, 06 y 07 pasados de `vmdata` a `local-lvm`. Los archivos de agentes (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.gemini/`) pasan a la raíz y se borra `agentes-bastion-v2/`.
 - Decisiones: se descarta el rediseño claro de la web (`bastion-web` vuelve a `main`, diseño oscuro, conservando las mejoras de Impeccable): la regla de estilo vuelve a tema oscuro, acento rojo `#E02B2F`, fuente Poppins y esquinas rectas (colores planeados originalmente), en `AGENTS.md` y `PRODUCT.md`.

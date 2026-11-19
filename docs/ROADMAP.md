@@ -57,9 +57,9 @@
 
 ## Fase I — Publicar servicios: ¿abrir puertos o salir a la red? (después de la web)
 
-- [ ] I1 · Comparar tres opciones: seguir cerrado y publicar desde la nube, túnel saliente, o abrir puertos en una zona aislada
-- [ ] I2 · Escribir la decisión con su riesgo, su coste y su plan de vuelta atrás
-- [ ] I3 · Prueba de concepto con un servicio de usar y tirar
+- [x] I1 · Comparar tres opciones: seguir cerrado y publicar desde la nube, túnel saliente, o abrir puertos en una zona aislada
+- [x] I2 · Escribir la decisión con su riesgo, su coste y su plan de vuelta atrás: túnel WireGuard saliente hacia un VPS con Caddy; Cloudflare descartado por ahora (`runbooks/10-tunel-wireguard-vps.md`)
+- [x] I3 · Prueba de concepto con un servicio de usar y tirar (subdominio de prueba, CT 105 `edge01` + VM `bastion-edge`)
 - [ ] I4 · Adaptar la web al resultado: alojamiento, despliegue y cifras
 
 ## Fase E — SOC (tras la fase B)

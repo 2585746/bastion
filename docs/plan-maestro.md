@@ -9,7 +9,7 @@
 ## 0. Las tres reglas del plan
 
 1. **Todo migrable.** Cada servicio en Docker Compose; la configuración del servidor en Ansible; la creación de máquinas en la nube con Terraform cuando lo básico funcione. Así pasar de Google Cloud a Azure u Oracle es volver a aplicar los mismos archivos.
-2. **La casa nunca se expone.** En el router de casa no se abre ningún puerto. Lo que deba estar en internet (web, honeypot) vive en la nube; lo de casa se alcanza por Tailscale. El honeypot va **aislado**, sin ruta hacia la red de casa. *Esta regla sigue vigente; la Fase I (sección 5 bis) estudia si se cambia y cómo, y no se toca nada antes de cerrarla.*
+2. **La casa nunca se expone.** En el router de casa no se abre ningún puerto. Lo que deba estar en internet (web, honeypot) vive en la nube; lo de casa se alcanza por Tailscale. El honeypot va **aislado**, sin ruta hacia la red de casa. *Esta regla sigue vigente: la Fase I (sección 5 bis) se resolvió con un túnel saliente (19/11/2026) y el router no cambia.*
 3. **El crédito es un reloj.** Google Cloud son ~270 € para ~3 meses. Se aprovecha para lo que gana por estar fuera de casa, con alerta de presupuesto, y al terminar se migra a Oracle Always Free y se borra todo en Google.
 
 ---
@@ -35,7 +35,7 @@
 | **B** | Hardware: 24 GB + HDD de 2 TB | RAM ✅ (16/11/2026); HDD pendiente de comprar otro (el Samsung murió el 18/11/2026) | Comprar el disco |
 | **C** | Base de automatización: Linux + Ansible | En paralelo con las clases | lab01 montado |
 | **D** | Nube 1 — Web pública + dominio (Google Cloud) | Al activar el Student Pack (dominio) | Fase A |
-| **I** | Publicar servicios: ¿abrir puertos o salir a la red? | Después de la web | Fase D (y conviene la E para vigilarlo) |
+| **I** | Publicar servicios: ¿abrir puertos o salir a la red? | ✅ I1–I3 hechos (19/11/2026); I4 (adaptar la web) pendiente | Fase D (y conviene la E para vigilarlo) |
 | **E** | SOC: Wazuh + honeypot + ataques controlados | Desbloqueada (RAM hecha) | 24 GB de RAM ✅ |
 | **F** | Reconstrucción de Active Directory en Proxmox | Desbloqueada (RAM hecha) | 24 GB de RAM ✅ |
 | **G** | Nube 2 — Laboratorios bajo demanda (Azure/AWS) | Antes de que caduque Google | Fase D probada |
@@ -136,6 +136,18 @@ Se hace **después de la web (fase D)**. Hoy la decisión vigente es que en casa
 - **Despliegue:** el flujo de GitHub Actions cambia (de publicar en Pages a copiar la carpeta `dist/` al servidor o construir un contenedor), y se añade un monitor en Uptime Kuma.
 - **Una sola variable:** `SITE_URL` en `astro.config.mjs`, más el DNS del dominio.
 - **Contenido que deja de ser cierto si se abre algo:** la cifra «0 puertos abiertos» (inicio, Bastión, README y CV), el diagrama de arquitectura y la decisión de diseño «ningún puerto abierto en el router de casa». Hay que actualizarlos a la vez y explicar el porqué en la bitácora.
+
+### Decisión tomada (19/11/2026)
+
+**Opción 2, con túnel propio:** `edge01` (CT 105, en casa) abre un **túnel WireGuard saliente** hacia `bastion-edge`, una VM de Google Cloud (Madrid, e2-micro) donde **Caddy** recibe el tráfico público con HTTPS y lo reenvía por el túnel (red `10.66.0.0/24`).
+
+- **Router de casa:** sin puertos abiertos ni reenvíos. La cifra «0 puertos abiertos» sigue siendo cierta.
+- **Cloudflare:** descartado por ahora (el tráfico pasaría por un tercero y se prefiere una solución propia). Se puede reabrir más adelante.
+- **Riesgo:** medio-bajo. `edge01` no reenvía tráfico y su cortafuegos solo admite el puerto del servicio por `wg0`; si el VPS se compromete, no hay ruta hacia la red de casa. El VPS es un único punto de fallo.
+- **Coste:** una VM e2-micro y una IP estática; se vigila con el presupuesto de Google Cloud (D1).
+- **Vuelta atrás:** `wg-quick down wg0` o apagar el CT 105 corta todo al instante; el router no se tocó.
+- **Prueba de concepto:** un servicio de usar y tirar en el subdominio de prueba. Pasos y configuraciones en [`runbooks/10-tunel-wireguard-vps.md`](../runbooks/10-tunel-wireguard-vps.md).
+- **Pendiente (I4):** adaptar la web (alojamiento, despliegue, monitor en Kuma). Si algún día se publica algo real, un ataque controlado desde la fase E para comprobar que Wazuh lo detecta.
 
 ### Cuándo está terminada
 Con la decisión escrita (aunque sea «seguimos cerrados»), la prueba de concepto hecha o descartada con motivo, y la web, el CV y el inventario coherentes con el resultado.
@@ -276,5 +288,6 @@ El estado de cada fase se lleva en `docs/ROADMAP.md` con casillas, y cada hito c
 | 13/11/2026 | `lab01` creado (CT 102) y arrancado, con *nesting* activado |
 | 14/11/2026 | Paperless apagado de verdad. GLPI reactivado. 27 incidencias importadas a GLPI por API. Incidencia 29 registrada |
 | 16/11/2026 | Fase B: RAM a 24 GB hecha. El Kingston ya no va al servidor (se quita `vmdata`). Fases E y F desbloqueadas |
+| 19/11/2026 | Fase I: decisión tomada (túnel WireGuard saliente `edge01` → VPS `bastion-edge` con Caddy, sin puertos abiertos; Cloudflare descartado por ahora). I1–I3 hechos. Runbook 10 |
 | 19/11/2026 | El HDD Samsung de 2 TB murió el 18/11: fase B pendiente de comprar otro disco. Runbooks de `vmdata` a `local-lvm` |
 

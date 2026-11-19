@@ -15,6 +15,7 @@ Guías paso a paso, una por fase del [plan maestro](../docs/plan-maestro.md). Ca
 | 07 | [Active Directory](07-active-directory.md) | F | 03 | Remoto | 2 sesiones |
 | 08 | [Azure y Terraform](08-azure-y-terraform.md) | G | 04 (rol `bootstrap`), 05 | Remoto | 2 sesiones |
 | 09 | [Migración y cierre de Google](09-migracion-y-cierre-google.md) | H | 05, 08 | Remoto | 3 h |
+| 10 | [Túnel WireGuard hacia un VPS](10-tunel-wireguard-vps.md) | I | 05 (VM en Google Cloud) | Remoto | Una sesión |
 
 El sitio web se construye con el prompt de [`prompts/claude-code-portafolio.md`](../prompts/claude-code-portafolio.md) y puede hacerse en cualquier momento: no depende de ninguna fase.
 

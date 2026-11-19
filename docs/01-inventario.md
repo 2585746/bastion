@@ -27,7 +27,7 @@
 |---|---|---|---|---|
 | 192.168.1.1 | — | Router Movistar | — | ✅ |
 | 192.168.1.40 (DHCP) | ws-cli01 | Cliente Windows 11 Enterprise (evaluación) | Hyper-V, PC | 🗑️ se reconstruye en Proxmox |
-| 192.168.1.240 | — | Libre (antes ubuntu-srv-01, retirado el 04/11/2026) | — | Libre |
+| 192.168.1.240 | **edge01** | Extremo del túnel WireGuard hacia `bastion-edge` (CT 105) | pve01 | ✅ |
 | 192.168.1.241 | ws-dc01 | Controlador de dominio `lab.internal` + DNS | Hyper-V, PC | 🗑️ se reconstruye en Proxmox (misma IP prevista) |
 | 192.168.1.242 | **pve01** | Anfitrión Proxmox VE | OptiPlex 7020 | ✅ |
 | 192.168.1.243 | **kuma01** | Uptime Kuma (CT 100) | pve01 | ✅ |
@@ -37,7 +37,7 @@
 | 192.168.1.247 | rocky-srv-01 | Rocky Linux, miembro del dominio | pve01 | 🔜 propuesta |
 | 192.168.1.248 | **docker01** | VM Debian 13 con Docker (NPM, Homepage, n8n, GLPI, Paperless ⏸️) | pve01 | ✅ |
 
-IP libres para servicios nuevos: `.240` y de `.249` en adelante. **Actualizar esta tabla cada vez.**
+IP libres para servicios nuevos: de `.249` en adelante. **Actualizar esta tabla cada vez.**
 
 ---
 
@@ -130,6 +130,7 @@ IP libres para servicios nuevos: `.240` y de `.249` en adelante. **Actualizar es
 | 101 | pihole01 | LXC sin privilegios, `onboot=1` | Debian 13 | 1 núcleo · 512 MB · swap 512 · 4 GB | .244 | ✅ |
 | 102 | lab01 | LXC sin privilegios | Debian 13 | 1 núcleo · 512 MB · 4 GB | .245 | ✅ Creado y arrancado el 13/11/2026, con *nesting* activado · ⚠️ confirmar instantánea `limpio` |
 | 103 | docker01 | VM, `onboot=1` | Debian 13 | 2 vCPU (`host`) · **4 GB con ballooning (mín. 2 GB)** · 20 GB | .248 | ✅ |
+| 105 | edge01 | LXC sin privilegios, `onboot=1`, con `/dev/net/tun` | Debian 13 | 1 núcleo · 256 MB · swap 256 · 2 GB | .240 | ✅ Túnel WireGuard saliente (fase I); sin puertos entrantes |
 | — | ansible01 | LXC | Debian 13 | ligero | .246 | 🔜 |
 | — | rocky-srv-01 | VM | Rocky Linux | ~1,5 GB | .247 | 🔜 |
 | — | ws-dc01 | VM | Windows Server (VirtIO) | 1,5–3 GB | .241 | 🔜 reconstrucción |
@@ -259,6 +260,19 @@ Monitores en pausa (fuera de la página de estado): 10 `paperless OK` ⏸️.
 | Encender | `cd /opt/glpi && docker compose start` |
 
 ---
+
+### Túnel WireGuard hacia la nube (fase I)
+
+| Dato | Valor |
+|---|---|
+| Decisión | Túnel saliente propio; sin puertos abiertos en el router; Cloudflare descartado por ahora (19/11/2026) |
+| Casa | CT 105 `edge01` (192.168.1.240), IP del túnel `10.66.0.2` |
+| Nube | VM `bastion-edge`, Google Cloud (Madrid), e2-micro, Debian 13 + Caddy, IP del túnel `10.66.0.1` |
+| Red del túnel | `10.66.0.0/24`, WireGuard en UDP 51820 (lo inicia `edge01`) |
+| Subdominio de prueba | `prueba.martindeprada.dev` → servicio de usar y tirar en `edge01` (puerto 8080, solo por el túnel) |
+| Cortafuegos de `edge01` | `nftables`: entrada denegada por defecto; SSH solo desde la red de casa; puerto 8080 solo desde `10.66.0.1` por `wg0`; `forward` denegado |
+| Claves e IP pública del VPS | Solo en cada máquina y en el gestor de contraseñas; nunca en este repositorio |
+| Runbook | `runbooks/10-tunel-wireguard-vps.md` |
 
 ## 7. Accesos rápidos (marcadores)
 
