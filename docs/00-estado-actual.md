@@ -14,7 +14,7 @@ Un servidor físico de segunda mano (50 €) con Proxmox VE, sin ningún puerto 
 
 | Capa | Qué hay | Estado |
 |---|---|---|
-| Hardware | Dell OptiPlex 7020 (i5-4590, **24 GB**, SSD 240 GB) validado con Memtest86+ y SMART | ✅ · RAM ampliada a 24 GB; HDD de 2 TB pendiente de conectar |
+| Hardware | Dell OptiPlex 7020 (i5-4590, **24 GB**, SSD 240 GB) validado con Memtest86+ y SMART | ✅ · RAM ampliada a 24 GB; HDD de 2 TB pendiente: el Samsung murió el 18/11/2026 y hay que comprar otro |
 | Hipervisor | Proxmox VE 9.2 en UEFI, repositorio sin suscripción, 2FA en todas las cuentas | ✅ |
 | Acceso remoto | Tailscale como router de subred; ningún puerto abierto en casa | ✅ |
 | DNS | Pi-hole (filtrado + nombres locales `*.home.arpa`) para la tailnet | ✅ |
@@ -109,7 +109,7 @@ Primer laboratorio dentro del PC de casa, que sirvió para aprender las bases y 
 1. **Tarea diaria a las 03:30** en modo *snapshot* con compresión ZSTD y **Modo de selección: Todo** (`all 1`).
 2. **Restauración probada** de un contenedor y de una VM con base de datos: restaurada como VM 999 con la red desconectada (para evitar un conflicto de IP), comparando el número de tablas antes y después.
 3. **Fallo detectado y corregido** (incidencia 24): la tarea solo copiaba una de las tres máquinas aunque decía "successful". Ahora copia todas (`all 1`, ≈ 6 GB por copia completa, 2 minutos).
-4. **Retención calculada con el espacio real:** 3 diarias + 1 semanal (~18–24 GB en total) mientras las copias vivan en el disco del sistema; 7 + 2 (~54 GB) cuando pasen al disco de 2 TB.
+4. **Retención calculada con el espacio real:** 3 diarias + 1 semanal (~18–24 GB en total) mientras las copias vivan en el disco del sistema; 7 + 2 (~54 GB) cuando pasen al disco de 2 TB (pendiente de comprar otro).
 5. **Copia externa cifrada (3-2-1):** `rclone` en `pve01` con capa `crypt` (`gdrive` → `gcrypt`) sincroniza cada noche a las 04:00 (`backup-to-drive.timer`) las copias hacia Google Drive cifrando contenidos y nombres de archivo. Avisa por `ntfy` al terminar y se probó la descarga y descifrado.
 
 ## 7. Plataforma Docker: la VM `docker01`
@@ -157,6 +157,6 @@ Primer laboratorio dentro del PC de casa, que sirvió para aprender las bases y 
 |---|---|
 | ~~RAM a 24 GB~~ | **Hecho (16/11/2026):** ya hay memoria para el SOC |
 | ~~SSD Kingston como `vmdata`~~ | **Descartado (16/11/2026):** el Kingston no va al servidor; los discos de las VM siguen en `local-lvm` |
-| Conectar el HDD de 2 TB | Disco dedicado a copias y volver a la retención de 7 diarias + 2 semanales |
+| Comprar y conectar un HDD de 2 TB | El Samsung murió el 18/11/2026 (no se detecta, ruido de clic). Disco dedicado a copias y volver a la retención de 7 diarias + 2 semanales |
 | ~~SSH de pve01 solo con clave (paso A5)~~ | **Descartado por decisión (13/11/2026):** se mantiene el acceso por `root` y por `martin` |
 | Subir el repositorio `bastion` a GitHub (paso A7) | Respaldo de código y portafolio verificable |

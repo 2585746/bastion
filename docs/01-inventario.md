@@ -63,16 +63,16 @@ IP libres para servicios nuevos: `.240` y de `.249` en adelante. **Actualizar es
 
 ### Servidor: Dell OptiPlex 7020 SFF (pve01)
 
-> 📦 **Recibido y pendiente de montar** (sesión de hardware en Yepes): RAM 2×8 GB, HDD de 2 TB y el Kingston A400. En la misma sesión: pasta térmica, Memtest86+ (también para descartar la RAM como causa de las caídas) y SMART largo del HDD.
+> 📦 **Recibido y pendiente de montar** (sesión de hardware en Yepes): el Kingston A400 (ya no va al servidor). La RAM de 24 GB está montada (16/11/2026). **El HDD Samsung de 2 TB murió el 18/11/2026:** hay que comprar otro. Pendiente: pasta térmica, Memtest86+ y SMART largo del disco nuevo.
 
 | Componente | Actual | Tras la sesión de hardware 🔜 |
 |---|---|---|
 | Procesador | Intel Core i5-4590 (4 núcleos / 4 hilos, Haswell), gráfica HD 4600 (Quick Sync H.264) | — |
 | Memoria | 16 GB DDR3-1600: 4×4 GB (3 SK Hynix + 1 "Noname"). Uso típico del anfitrión: ~5–6 GB | **24 GB**: 2×8 GB Patriot Viper + 2×4 GB Hynix (quitar el Noname). Un módulo de 8 en cada canal |
 | Disco 1 | **Toshiba TR200 240 GB** (SATA). SMART PASSED, sin errores, 26 588 h, desgaste 63, ~60 TB escritos. LVM: `root` 64 GB (`local`), `swap` 8 GB, `data` ~140 GB (`local-lvm`) | Proxmox, ISO, plantillas y contenedores ligeros. Sustituir a medio plazo |
-| Disco 2 | — | **Kingston A400 240 GB**: salud 79 %, 3 465 h, 0 sectores malos, 27,9 TB escritos. → **LVM-Thin `vmdata`** para las VM |
-| Disco 3 | — | **HDD Samsung HD203WI 2 TB** (5400 rpm, fabricado en 2010). → copias de seguridad + biblioteca de Jellyfin. Hacer SMART largo al montarlo |
-| Lector DVD | Instalado | Se retira; su bahía aloja el Kingston con adaptador *caddy* |
+| Disco 2 | — | **Kingston A400 240 GB**: salud 79 %, 3 465 h, 0 sectores malos, 27,9 TB escritos. → **descartado (16/11/2026)**: no va al servidor; las VM siguen en `local-lvm` |
+| Disco 3 | — | ~~HDD Samsung HD203WI 2 TB~~ — **murió el 18/11/2026** (no se detecta en ningún puerto, ruido de clic). Pendiente comprar otro para copias de seguridad + biblioteca de Jellyfin; hacerle SMART largo al montarlo |
+| Lector DVD | Instalado | Se retira |
 | Red | 1 GbE integrada (Intel) | — |
 | Fuente | Propietaria de Dell (~255 W) | — |
 | Temperatura | En reposo 26–32 °C (Glances, `Package id 0`). ~69 °C en Memtest86+ | Cambiar pasta térmica |
@@ -89,7 +89,7 @@ IP libres para servicios nuevos: `.240` y de `.249` en adelante. **Actualizar es
 | Gráfica | NVIDIA RTX 5060 (8 GB) — para Ollama/IA |
 | C: (Windows) | **Samsung PM981 256 GB NVMe** (MZVLB256HBHQ-000L7), clonado el 02/11/2026. ~15 GB sin asignar al final |
 | D: Juegos | SSD de 480 GB |
-| Kingston A400 240 GB | Conectado pero **desactivado** por colisión de firmas. No poner en línea; va al servidor |
+| Kingston A400 240 GB | Conectado pero **desactivado** por colisión de firmas. No poner en línea; ya no va al servidor |
 | AMD RX 6500 XT | Sin usar. No sirve para el servidor (no cabe, sin alimentación, sin codificador de vídeo). Pensado venderla |
 | Cuentas de Windows | `Martin` (PowerShell normal, **sin clave SSH** 🔜) · `Martin_` (administrador, tiene la clave Ed25519 autorizada en docker01 y `rclone v1.75.2` instalado) |
 | Terminal | **Warp**: sesiones SSH a pve01 (root) y docker01 (martin). Modo Terminal; sin sugerencias de IA en las clases |
@@ -118,7 +118,7 @@ IP libres para servicios nuevos: `.240` y de `.249` en adelante. **Actualizar es
 | Vigilancia externa | Healthchecks.io, chequeo `pve01`, periodo 5 min, gracia 5 min, integración ntfy. Cron en `/etc/cron.d/healthchecks` |
 | Hardware | **Glances 4.3.1** (apt) como `glances-web.service` (`Restart=always`, `RestartSec=10`). Orden: `glances -w --disable-webui -B 192.168.1.242` → solo API en `192.168.1.242:61208` (`/api/4/...`). Sensor de CPU: `Package id 0` (aviso 80 °C, crítico 100 °C) ✅ |
 | Estabilidad | Varias caídas sin apagado ordenado (30/10, 01/11 y tres el 04/11), probablemente cortes de luz. AC Recovery = Power On las recupera. Tras un reinicio, comprobar que **todo** volvió |
-| Copias de seguridad | Tarea diaria **03:30**, modo snapshot, ZSTD, destino `local`. ✅ **Modo de selección: Todo** (`all 1` en `/etc/pve/jobs.cfg`). Retención **temporal 3 diarias + 1 semanal** (copia completa ≈ 6 GB: kuma01 0,6 · pihole01 0,3 · docker01 5,0; ~18–24 GB en total); volver a 7+2 (~54 GB) cuando estén en el HDD. Restauración probada, incluida una VM con base de datos |
+| Copias de seguridad | Tarea diaria **03:30**, modo snapshot, ZSTD, destino `local`. ✅ **Modo de selección: Todo** (`all 1` en `/etc/pve/jobs.cfg`). Retención **temporal 3 diarias + 1 semanal** (copia completa ≈ 6 GB: kuma01 0,6 · pihole01 0,3 · docker01 5,0; ~18–24 GB en total); volver a 7+2 (~54 GB) cuando estén en el HDD (pendiente de comprar otro). Restauración probada, incluida una VM con base de datos |
 | Copia fuera de casa | ✅ `rclone v1.60.1-DEV` con `crypt` (`gdrive` → `gcrypt`) hacia `Drive/bastion-backups` con Client ID OAuth propio en producción; cifrado de archivos y nombres en `pve01`; script `/usr/local/bin/backup-to-drive.sh` y temporizador `backup-to-drive.timer` a las **04:00**; aviso por `ntfy`; restauración probada |
 | Salud de discos | smartd activo; avisos vía notificaciones |
 
