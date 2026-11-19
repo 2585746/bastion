@@ -169,7 +169,7 @@ Plantilla descargada: `debian-13-standard_13.1-2_amd64.tar.zst`. Todos los conte
 | Restablecer contraseña | `cd /opt/uptime-kuma && npm run reset-password` |
 
 Monitores activos (ID · nombre): 1 `pve01 - Web` · 2 `pve01-ping` · 3 `Internet Casa` · 6 `pihole01 - DNS` · 7 `docker01 - Ping` · 8 `npm - Panel` · 11 `Homepage Ping` · 12 `GLANCES RENDIMIENTO` · 13 `N8N HTTP`.
-Monitor nuevo (fase I): HTTPS del subdominio de prueba del túnel (`prueba.martindeprada.dev`); anota aquí su ID al crearlo.
+Monitor de la fase I (creado el 19/11/2026): HTTPS del subdominio de prueba del túnel (`prueba.martindeprada.dev`). ⚠️ Falta anotar aquí su ID.
 Monitores en pausa (fuera de la página de estado): 10 `paperless OK` ⏸️.
 ⚠️ 5 `glpi - Web`: GLPI está encendido desde el 14/11/2026; reactivar este monitor y confirmar que pasa a verde.
 ⚠️ Confirmar si existen todavía `ws-dc01 - DNS` y `ubuntu-srv-01` (no aparecen en la página de estado). Si existen, pausar el primero y borrar el segundo.
@@ -273,7 +273,7 @@ Monitores en pausa (fuera de la página de estado): 10 `paperless OK` ⏸️.
 | Subdominio de prueba | `prueba.martindeprada.dev` → servicio de usar y tirar en `edge01` (puerto 8080, solo por el túnel) |
 | Cortafuegos de `edge01` | `nftables`: entrada denegada por defecto; SSH solo desde la red de casa; puerto 8080 solo desde `10.66.0.1` por `wg0`; `forward` denegado |
 | Cortafuegos de Google Cloud | Entrada: `tcp:80`, `tcp:443` y `udp:51820` abiertos; **SSH solo desde IAP** (`35.235.240.0/20`) |
-| Monitor | Nuevo en Uptime Kuma (HTTPS de `prueba.martindeprada.dev`), con aviso por ntfy |
+| Monitor | Creado en Uptime Kuma (HTTPS de `prueba.martindeprada.dev`), con aviso por ntfy |
 | Claves e IP pública del VPS | Solo en cada máquina y en el gestor de contraseñas; nunca en este repositorio |
 | Runbook | `runbooks/10-tunel-wireguard-vps.md` |
 

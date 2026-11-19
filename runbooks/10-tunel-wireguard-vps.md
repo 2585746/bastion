@@ -313,7 +313,7 @@ El router no se ha tocado en ningún paso, así que no hay nada que deshacer en 
 - [ ] `ip_forward` es 0 en `edge01` y el `forward` de nftables está en `drop`
 - [ ] Desde el VPS no se alcanza ninguna IP de `192.168.1.0/24` salvo la del túnel
 - [ ] Reinicio de `edge01`: el túnel y el servicio de prueba vuelven solos
-- [ ] Monitor nuevo en Uptime Kuma con la URL de prueba, y aviso por ntfy si cae
+- [x] Monitor creado en Uptime Kuma con la URL de prueba, y aviso por ntfy si cae
 - [ ] SSH a `bastion-edge` solo por IAP (`35.235.240.0/20`); el puerto 22 no responde desde internet
 - [ ] Ninguna clave privada ni IP pública escrita en el repositorio
 - [ ] Inventario, ROADMAP y plan maestro actualizados

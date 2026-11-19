@@ -8,7 +8,7 @@
 - Hecho: documentada la fase I. Decisión: túnel WireGuard saliente desde casa (`edge01`, CT 105) hacia un VPS en Google Cloud (`bastion-edge`, Madrid, e2-micro) con Caddy; sin puertos abiertos en el router; Cloudflare descartado por ahora. Creado `runbooks/10-tunel-wireguard-vps.md` (`wg0.conf` de los dos lados, `nftables` de `edge01`, Caddyfile y servicio de prueba, sin claves ni IP públicas). SSH a la VM limitado a IAP (`35.235.240.0/20`) en el cortafuegos de Google. Inventario con CT 105, la VM (IP fija), la red `10.66.0.0/24` y el monitor nuevo de Kuma; ROADMAP con I1–I3 hechos y plan maestro con la decisión.
 - Recordatorio: el HDD de 2 TB murió el 18/11 (ver la entrada siguiente); la fase B sigue pendiente de comprar otro disco.
 - Decisiones: «0 puertos abiertos» sigue siendo cierto; el riesgo se limita con `forward` denegado en `edge01` y un cortafuegos que solo deja entrar el puerto del servicio por el túnel.
-- Pendiente: I4 (adaptar la web: alojamiento, despliegue y monitor en Kuma); añadir `edge01` y la URL de prueba a Uptime Kuma; crear el monitor de la URL de prueba en Uptime Kuma y anotar su ID en el inventario; comprobar la lista de verificación del runbook 10 con las máquinas reales.
+- Pendiente: I4 (adaptar la web: alojamiento, despliegue y monitor en Kuma); añadir `edge01` y la URL de prueba a Uptime Kuma; anotar en el inventario el ID del monitor de Kuma de la URL de prueba (ya creado); comprobar la lista de verificación del runbook 10 con las máquinas reales.
 
 ---
 
