@@ -44,7 +44,19 @@ Internet ──► bastion-edge (Google Cloud, Madrid, e2-micro)
 
 1. **Región:** Madrid (`europe-southwest1`). **Tipo:** `e2-micro`. **SO:** Debian 13.
 2. **IP externa estática reservada** (si no, cambia al reiniciar y se rompen el DNS y el túnel). Anótala solo en un gestor de contraseñas, no aquí.
-3. **Reglas del cortafuegos de Google Cloud** (entrada): `tcp:80`, `tcp:443`, `udp:51820`. SSH: solo desde tu IP o por IAP/Tailscale, nunca abierto a todo internet.
+3. **Reglas del cortafuegos de Google Cloud** (entrada): `tcp:80`, `tcp:443` y `udp:51820` desde cualquier origen (la IP de casa cambia). **SSH solo desde IAP**, el servicio de túneles de Google, cuyo rango es `35.235.240.0/20`. Nunca abras el 22 a todo internet:
+
+```
+gcloud compute firewall-rules create bastion-edge-ssh-iap \
+  --direction=INGRESS --action=ALLOW --rules=tcp:22 \
+  --source-ranges=35.235.240.0/20 --target-tags=bastion-edge
+gcloud compute firewall-rules create bastion-edge-publico \
+  --direction=INGRESS --action=ALLOW --rules=tcp:80,tcp:443,udp:51820 \
+  --source-ranges=0.0.0.0/0 --target-tags=bastion-edge
+```
+
+   - Las reglas se aplican a la VM mediante la etiqueta de red `bastion-edge`. Si existe la regla `default-allow-ssh` del proyecto, **bórrala o desactívala** para que el SSH solo entre por IAP.
+   - Para entrar: `gcloud compute ssh bastion-edge --tunnel-through-iap` (necesita el permiso *IAP-secured Tunnel User*).
 4. **Presupuesto:** antes de crearla, calcula el coste en la calculadora de Google Cloud; los precios cambian y lo gratuito depende de la región. Mantén la alerta del presupuesto (fase D1).
 5. Endurecimiento básico, igual que docker01: usuario con `sudo`, solo clave Ed25519, sin acceso de root ni contraseñas, y verificar con `sudo sshd -T`.
 
@@ -301,7 +313,8 @@ El router no se ha tocado en ningún paso, así que no hay nada que deshacer en 
 - [ ] `ip_forward` es 0 en `edge01` y el `forward` de nftables está en `drop`
 - [ ] Desde el VPS no se alcanza ninguna IP de `192.168.1.0/24` salvo la del túnel
 - [ ] Reinicio de `edge01`: el túnel y el servicio de prueba vuelven solos
-- [ ] Monitor de `edge01` y de la URL de prueba en Uptime Kuma
+- [ ] Monitor nuevo en Uptime Kuma con la URL de prueba, y aviso por ntfy si cae
+- [ ] SSH a `bastion-edge` solo por IAP (`35.235.240.0/20`); el puerto 22 no responde desde internet
 - [ ] Ninguna clave privada ni IP pública escrita en el repositorio
 - [ ] Inventario, ROADMAP y plan maestro actualizados
 
